@@ -1,0 +1,19 @@
+{
+  "name": "Active Reading Quiz Extension",
+  "version": "1.0.0",
+  "description": "This extension tackles the problem of passive learning by turning any web article into an interactive quiz.",
+  "manifest_version": 3,
+  "author": "Ilia Lataria",
+  "action": {
+    "default_popup": "index.html",
+    "default_title": "Active Reading Quiz Extension"
+  },
+  "permissions": [
+    "activeTab",
+    "tabs",
+    "scripting"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ]
+}
