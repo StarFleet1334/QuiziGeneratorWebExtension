@@ -15,5 +15,16 @@
   ],
   "host_permissions": [
     "<all_urls>"
+  ],
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": [
+        "libs/Readability.js",
+        "content.js"
+      ],
+      "run_at": "document_idle"
+    }
   ]
+
 }
