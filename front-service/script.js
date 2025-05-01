@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     urlDisplay.textContent = "Sending content to server...";
 
                     try {
-                        const serverResponse = await fetch('http://localhost:8080/content', {
+                        const serverResponse = await fetch('http://localhost:8080/api/content', {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json'
@@ -29,7 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                         if (serverResponse.ok) {
                             const result = await serverResponse.text();
-                            urlDisplay.textContent = "Content sent successfully! Server says: " + result;
+                            urlDisplay.textContent = "Content sent successfully!";
                             console.log("[Active Reading Quiz] Server Response:", result);
                         } else {
                             urlDisplay.textContent = "Failed to send content. Server error.";
