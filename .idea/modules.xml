@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/QuiziGeneratorWebExtension.iml" filepath="$PROJECT_DIR$/.idea/QuiziGeneratorWebExtension.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/back-service.main.iml" filepath="$PROJECT_DIR$/.idea/modules/back-service.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/life-service/life-service.iml" filepath="$PROJECT_DIR$/life-service/life-service.iml" />
     </modules>
   </component>
 </project>
