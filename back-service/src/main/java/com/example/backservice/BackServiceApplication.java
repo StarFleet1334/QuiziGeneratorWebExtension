@@ -13,9 +13,9 @@ public class BackServiceApplication {
         /**
          * Tasks:
          *
-         * 1. Write an Endpoint that gets that readable formatted content ( NOT DONE )
-         * 2. Apply AI extension to process that content and generate a question with 4 answers
+         * 1. Apply AI extension to process that content and generate a question with 4 answers
          * , out of 1 is correct ( NOT DONE )
+         * 2. Make a readme to explain endpoints ( NOT DONE )
          *
          */
     }

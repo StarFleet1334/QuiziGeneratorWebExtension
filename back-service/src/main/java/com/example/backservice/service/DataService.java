@@ -1,11 +1,16 @@
 package com.example.backservice.service;
 
+import lombok.Getter;
 import org.springframework.stereotype.Service;
 
+@Getter
 @Service
-public class UserService {
+public class DataService {
+
+    private String content;
 
     public String preProcessContent(String content) {
+        this.content = content;
         return cleanText(content);
     }
 
@@ -21,6 +26,5 @@ public class UserService {
                 .replaceAll("\\s+$", "")
                 .replaceAll("Keep Exploring[\\s\\S]*$", "");
     }
-
 
 }
