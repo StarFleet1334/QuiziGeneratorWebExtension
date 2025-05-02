@@ -1,5 +1,6 @@
 package com.example.backservice.skeleton;
 
+import com.example.backservice.entity.respose.QuestionResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -21,6 +22,6 @@ public interface QuestionControllerInterface {
             @ApiResponse(responseCode = "404", description = "No questions found"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    ResponseEntity<List<String>> getQuestions();
+    ResponseEntity<List<QuestionResponse>> getQuestions();
 
 }

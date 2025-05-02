@@ -1,5 +1,6 @@
 package com.example.backservice.contoller;
 
+import com.example.backservice.entity.respose.QuestionResponse;
 import com.example.backservice.service.DataService;
 import com.example.backservice.skeleton.QuestionControllerInterface;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +15,7 @@ public class QuestionController implements QuestionControllerInterface {
     private final DataService userService;
 
     @Override
-    public ResponseEntity<List<String>> getQuestions() {
+    public ResponseEntity<List<QuestionResponse>> getQuestions() {
         return ResponseEntity.ok(userService.generateQuestions());
     }
 }
