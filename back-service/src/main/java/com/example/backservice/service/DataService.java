@@ -19,10 +19,11 @@ public class DataService {
     private static final String API_URL = "http://127.0.0.1:8001/generate-questions";
     private final RestTemplate restTemplate = new RestTemplate();
     private String content;
+    List<QuestionResponse> questions;
 
     public String preProcessContent(String content) {
-        this.content = content;
-        return cleanText(content);
+        this.content = cleanText(content);
+        return content;
     }
 
     private String cleanText(String text) {
@@ -38,16 +39,16 @@ public class DataService {
                 .replaceAll("Keep Exploring[\\s\\S]*$", "");
     }
 
-    public List<QuestionResponse> generateQuestions() {
+    public List<QuestionResponse> generateQuestions(String content) {
         if (content == null || content.isEmpty()) {
             throw new IllegalStateException("Content must be saved first.");
         }
-        LOGGER.info("Content being sent to API: [{}]", cleanText(content));
+        LOGGER.info("Content being sent to API: [{}]", content);
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 
-        Map<String, String> requestBody = Map.of("text", cleanText(content));
+        Map<String, String> requestBody = Map.of("text", content);
         HttpEntity<Map<String, String>> entity = new HttpEntity<>(requestBody, headers);
 
         ResponseEntity<String> rawResponse = restTemplate.exchange(
@@ -67,6 +68,7 @@ public class DataService {
 
         List<QuestionResponse> questions = response.getBody().get("questions");
         LOGGER.info("Generated questions: {}", questions);
+        this.questions = questions;
         return questions;
     }
 

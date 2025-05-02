@@ -12,11 +12,11 @@ import java.util.List;
 @RequiredArgsConstructor
 public class QuestionController implements QuestionControllerInterface {
 
-    private final DataService userService;
+    private final DataService dataService;
 
     @Override
     public ResponseEntity<List<QuestionResponse>> getQuestions() {
-        return ResponseEntity.ok(userService.generateQuestions());
+        return ResponseEntity.ok(dataService.getQuestions());
     }
 }
 
