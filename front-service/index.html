@@ -11,9 +11,21 @@
 <div class="container">
     <div id="initialView">
         <h2>Active Reading Quiz</h2>
-        <button class="button" id="getUrlButton">Generate Quiz</button>
-        <div id="urlDisplay"></div>
+        <div class="button-container-vertical">
+            <button class="button" id="getUrlButton">Start Quiz</button>
+            <button class="button" id="chooseCategoryButton">Choose Category</button>
+        </div>
+
     </div>
+
+    <div id="categoryView" style="display: none;">
+        <h2>Select Category</h2>
+        <div id="categories-container"></div>
+        <div class="button-container">
+            <button class="button" id="categoryBackButton">Go Back</button>
+        </div>
+    </div>
+
 
     <div id="secondView" style="display: none;">
         <h2>Quiz</h2>
@@ -28,5 +40,5 @@
 
 
 </body>
-<script src="script.js"></script>
+<script type="module" src="js/script.js"></script>
 </html>

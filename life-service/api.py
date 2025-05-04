@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 app = FastAPI()
 
 
-API_KEY = "<Your GEMINI API KEY>"
+API_KEY = "<API_KEY>"
 client = genai.Client(api_key=API_KEY)
 
 class TextRequest(BaseModel):
@@ -33,6 +33,74 @@ async def log_requests(request: Request, call_next):
 async def test():
     logger.info("Test endpoint called")
     return {"status": "ok"}
+
+@app.post("/generate-categories")
+async def generate_categories(req: TextRequest):
+    logger.info("generate_categories endpoint called")
+    logger.info(f"Received text length: {len(req.text) if req.text else 0}")
+
+    if not req.text.strip():
+        logger.warning("Empty text received")
+        return []
+
+    try:
+        chunks = split_into_chunks(req.text, max_length=200)
+        all_categories = set()
+
+        for chunk in chunks:
+            try:
+                formatted_prompt = f"""
+                    Please analyze the passage below and extract its key subject areas.  
+                    Return **no more than five** broad thematic categories that could each serve as the basis for multiple quiz questions.
+                    
+                    Text to analyze:
+                    {chunk}
+                    
+                    Guidelines
+                    • Focus on high‑level themes that capture the core ideas of the text.  
+                    • Keep the labels concise and professional (one short phrase each).  
+                    • List the themes as a numbered list, 1–5, with one category per line.
+                    
+                    Categories:
+                    """
+
+                response = client.models.generate_content(
+                    model="gemini-2.0-flash",
+                    contents=formatted_prompt
+                )
+
+                logger.info("Successfully received response from Gemini")
+                result = response.text
+                logger.info(f"Generated raw text: {result}")
+
+                chunk_categories = [
+                    line.strip() for line in result.split('\n')
+                    if line.strip() and (
+                            line.strip().startswith('-') or
+                            line.strip().startswith('*') or
+                            any(line.strip().startswith(str(i)) for i in range(1, 6))
+                    )
+                ]
+
+                cleaned_categories = [
+                    cat.strip('- *1234567890.').strip()
+                    for cat in chunk_categories
+                ]
+
+                all_categories.update(cat for cat in cleaned_categories if cat)
+                logger.info(f"Extracted categories from chunk: {cleaned_categories}")
+
+            except Exception as e:
+                logger.warning(f"Error processing chunk: {str(e)}")
+                continue
+
+        final_categories = sorted(list(all_categories))
+        logger.info(f"Generated {len(final_categories)} categories")
+        return final_categories
+
+    except Exception as e:
+        logger.warning(f"Error generating categories: {str(e)}")
+        return []
 
 
 @app.post("/generate-questions")

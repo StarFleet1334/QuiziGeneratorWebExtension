@@ -1,0 +1,31 @@
+package com.example.backservice.skeleton;
+
+import com.example.backservice.entity.request.ContentRequest;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+import java.util.List;
+
+@Tag(name = "Categorization", description = "Operations related to website content categorization")
+@RequestMapping(value = "api/category")
+public interface CategoryControllerInterface {
+
+    @PostMapping
+    @Operation(summary = "Divide content into a category", description = "Operation divides content received into a categories")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Content successfully received & divided into a category"),
+            @ApiResponse(responseCode = "400", description = "Invalid request body"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
+    ResponseEntity<List<String>> divideContentIntoCategory(
+            @Parameter(description = "Content data", required = true)
+            @RequestBody ContentRequest content
+    );
+}

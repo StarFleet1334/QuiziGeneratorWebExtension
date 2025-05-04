@@ -21,8 +21,14 @@ public class DataController implements DataControllerInterface {
 
     @Override
     public ResponseEntity<?> saveContent(ContentRequest content) {
-        String cleanedContent = dataService.preProcessContent(content.getContent());
-        List<QuestionResponse> generatedQuestions = dataService.generateQuestions(cleanedContent);
+        String cleanedContent;
+        List<QuestionResponse> generatedQuestions;
+        if (dataService.getContent() == null) {
+            cleanedContent = dataService.preProcessContent(content.getContent());
+            generatedQuestions = dataService.generateQuestions(cleanedContent);
+        } else {
+            generatedQuestions = dataService.generateQuestions(dataService.getContent());
+        }
         return ResponseEntity.ok(generatedQuestions);
     }
 
