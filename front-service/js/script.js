@@ -26,14 +26,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const content = await APIService.getTabContent();
             if (content) {
-                const categories = await APIService.fetchFromServer('category', content);
-                CategoryManager.displayCategories(categories);
+                const categoryMap = await APIService.fetchFromServer('category', content);
+                CategoryManager.displayCategories(categoryMap);
             }
         } catch (error) {
             console.error("[Active Reading Quiz] Error:", error);
             UIManager.showError(elements.categoriesContainer, 'Failed to load categories');
         }
     }
+
 
     document.getElementById('getUrlButton').addEventListener('click', generateQuiz);
     document.getElementById('chooseCategoryButton').addEventListener('click', generateCategories);

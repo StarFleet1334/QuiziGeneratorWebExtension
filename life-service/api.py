@@ -41,13 +41,13 @@ async def generate_categories(req: TextRequest):
 
     if not req.text.strip():
         logger.warning("Empty text received")
-        return []
+        return {}
 
     try:
         chunks = split_into_chunks(req.text, max_length=200)
-        all_categories = set()
+        category_matches = {}
 
-        for chunk in chunks:
+        for chunk_index, chunk in enumerate(chunks):
             try:
                 formatted_prompt = f"""
                     Please analyze the passage below and extract its key subject areas.  
@@ -69,7 +69,6 @@ async def generate_categories(req: TextRequest):
                     contents=formatted_prompt
                 )
 
-                logger.info("Successfully received response from Gemini")
                 result = response.text
                 logger.info(f"Generated raw text: {result}")
 
@@ -87,21 +86,21 @@ async def generate_categories(req: TextRequest):
                     for cat in chunk_categories
                 ]
 
-                all_categories.update(cat for cat in cleaned_categories if cat)
-                logger.info(f"Extracted categories from chunk: {cleaned_categories}")
+                for category in cleaned_categories:
+                    if category:
+                        if category not in category_matches:
+                            category_matches[category] = []
+                        category_matches[category].append(chunk)
 
             except Exception as e:
                 logger.warning(f"Error processing chunk: {str(e)}")
                 continue
 
-        final_categories = sorted(list(all_categories))
-        logger.info(f"Generated {len(final_categories)} categories")
-        return final_categories
+        return category_matches
 
     except Exception as e:
         logger.warning(f"Error generating categories: {str(e)}")
-        return []
-
+        return {}
 
 @app.post("/generate-questions")
 async def generate_questions(req: TextRequest):
@@ -160,6 +159,76 @@ async def generate_questions(req: TextRequest):
         logger.warning(error_msg)
         return {"questions": [], "error": error_msg}
 
+
+
+@app.post("/generate-categories/{category}")
+async def generate_questions_by_category(category: str, req: TextRequest):
+    logger.info(f"generate_questions_by_category endpoint called for category: {category}")
+    logger.info(f"Received text length: {len(req.text) if req.text else 0}")
+
+    if not req.text.strip():
+        logger.warning("Empty text received")
+        return {"questions": [], "error": "Input text is empty"}
+
+    try:
+        chunks = split_into_chunks(req.text, max_length=200)
+        if not chunks:
+            logger.warning("No valid chunks created")
+            return {"questions": [], "error": "No valid chunks created"}
+
+        questions = []
+
+        for chunk in chunks:
+            category_check_prompt = f"""
+                Is this text related to the category "{category}"? 
+                Text to analyze: {chunk}
+                Answer with just YES or NO.
+            """
+
+            category_response = client.models.generate_content(
+                model="gemini-2.0-flash",
+                contents=category_check_prompt
+            )
+
+            is_relevant = "YES" in category_response.text.upper()
+
+            if is_relevant:
+                question_prompt = (
+                    f"Using ONLY the information from the given text, create one multiple-choice question "
+                    f"specifically about the topic: {category}.\n"
+                    "The question must be directly answerable from the text. "
+                    "One option must be the correct answer that appears in the text. "
+                    "Other options must be clearly wrong but plausible. "
+                    "Format your response exactly like this:\n\n"
+                    "Question: [Write a clear question]\n"
+                    "A) [First option - use exact text if it's the correct answer]\n"
+                    "B) [Second option]\n"
+                    "C) [Third option]\n"
+                    "D) [Fourth option]\n"
+                    "Correct: [Write A, B, C, or D - must correspond to the option that matches the text exactly]\n\n"
+                    "Text to use:\n"
+                    f"{chunk}\n\n"
+                    "Important: The correct answer MUST be a fact stated in the text. Do not make up or infer answers."
+                )
+
+                response = client.models.generate_content(
+                    model="gemini-2.0-flash",
+                    contents=question_prompt
+                )
+
+                result = response.text
+                parsed = robust_parse_question(result)
+
+                if parsed:
+                    questions.append(parsed)
+
+        logger.info(f"Generated {len(questions)} questions for category {category}")
+        return {"questions": questions}
+
+    except Exception as e:
+        error_msg = f"Error generating questions: {str(e)}"
+        logger.warning(error_msg)
+        return {"questions": [], "error": error_msg}
 
 
 def split_into_chunks(text, max_length=350):

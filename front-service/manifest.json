@@ -28,10 +28,14 @@
   ],
   "web_accessible_resources": [{
     "resources": [
-      "js/*.js"
+      "js/script.js",
+      "js/uiManager.js",
+      "js/quizManager.js",
+      "js/categoryManager.js",
+      "js/apiService.js",
+      "libs/*"
     ],
     "matches": ["<all_urls>"]
   }]
-
 
 }

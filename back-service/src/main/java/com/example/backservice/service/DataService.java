@@ -122,23 +122,24 @@ public class DataService {
         return questions;
     }
 
-    public List<String> divideContentIntoCategories(String content) {
+    public Map<String, List<String>> divideContentIntoCategories(String content) {
         LOGGER.info("Dividing content into categories, content length: {}", content.length());
 
-        ResponseEntity<List<String>> response = makeApiRequest(
+        ResponseEntity<Map<String, List<String>>> response = makeApiRequest(
                 apiProperties.getCategoriesUrl(),
                 content,
-                new ParameterizedTypeReference<>() {
-                }
+                new ParameterizedTypeReference<Map<String, List<String>>>() {}
         );
 
         if (response.getBody() == null) {
             throw new ApiResponseException("No categories received from API");
         }
 
-        LOGGER.info("Received categories: {}", response.getBody());
-        LOGGER.info("Generated {} categories", response.getBody().size());
-        return response.getBody();
+        Map<String, List<String>> categoryMap = response.getBody();
+        LOGGER.info("Received categories with content: {}", categoryMap.keySet());
+        LOGGER.info("Generated {} categories", categoryMap.size());
+        return categoryMap;
+
     }
 
     public String preProcessContent(String content) {

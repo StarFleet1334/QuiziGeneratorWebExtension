@@ -1,43 +1,54 @@
 export class CategoryManager {
-    static displayCategories(categories) {
+    static displayCategories(categoryMap) {
         const categoriesContainer = document.getElementById('categories-container');
         categoriesContainer.innerHTML = '';
 
-        if (Array.isArray(categories) && categories.length > 0) {
-            const ul = this.createCategoryList(categories);
+        if (categoryMap && Object.keys(categoryMap).length > 0) {
+            const ul = this.createCategoryList(categoryMap);
             categoriesContainer.appendChild(ul);
         } else {
             this.showNoCategories(categoriesContainer);
         }
     }
 
-    static createCategoryList(categories) {
+    static createCategoryList(categoryMap) {
         const ul = document.createElement('ul');
         ul.className = 'categories-list';
 
-        categories.forEach(category => {
-            const li = this.createCategoryItem(category);
+        Object.entries(categoryMap).forEach(([category, relatedContent], index) => {
+            const li = this.createCategoryItem(category, relatedContent, index);
             ul.appendChild(li);
         });
 
         return ul;
     }
 
-    static createCategoryItem(category) {
+    static createCategoryItem(category, relatedContent, index) {
         const li = document.createElement('li');
         li.className = 'category-item';
+        li.setAttribute('data-category-index', index);
+        li.setAttribute('data-category', category);
 
         const button = document.createElement('button');
         button.className = 'category-button';
         button.textContent = category;
-        button.addEventListener('click', () => this.handleCategorySelect(category));
+        button.setAttribute('data-category-index', index);
+        button.setAttribute('data-category', category);
+
+        button.dataset.content = JSON.stringify(relatedContent);
+
+        button.onclick = (event) => {
+            event.stopPropagation(); // Prevent event bubbling
+            this.handleCategorySelect(category, relatedContent);
+        };
 
         li.appendChild(button);
         return li;
     }
 
-    static handleCategorySelect(category) {
+    static async handleCategorySelect(category, relatedContent) {
         console.log(`Selected category: ${category}`);
+        console.log('Related content:', relatedContent);
     }
 
     static showNoCategories(container) {

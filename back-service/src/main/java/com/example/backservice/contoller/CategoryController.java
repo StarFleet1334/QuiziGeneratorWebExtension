@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -17,9 +18,9 @@ public class CategoryController implements CategoryControllerInterface {
     private final DataService dataService;
 
     @Override
-    public ResponseEntity<List<String>> divideContentIntoCategory(ContentRequest content) {
+    public ResponseEntity<Map<String, List<String>>> divideContentIntoCategory(ContentRequest content) {
         String cleanedContent;
-        List<String> categories;
+        Map<String, List<String>> categories;
         if (dataService.getContent() == null) {
             cleanedContent = dataService.preProcessContent(content.getContent());
             categories = dataService.divideContentIntoCategories(cleanedContent);
@@ -28,5 +29,11 @@ public class CategoryController implements CategoryControllerInterface {
         }
         LOGGER.info("Received categories: {}", categories);
         return ResponseEntity.ok(categories);
+    }
+
+    @Override
+    public ResponseEntity<?> getContentByCategory(String category) {
+
+        return ResponseEntity.ok("Hello");
     }
 }
