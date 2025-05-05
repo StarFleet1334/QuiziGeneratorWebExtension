@@ -256,4 +256,112 @@ body {
     scrollbar-width: none;
 }
 
+.theme-toggle {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: none;
+    border: none;
+    color: #333;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 50%;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.theme-toggle:hover {
+    background-color: #f0f0f0;
+}
+
+.theme-toggle i {
+    font-size: 20px;
+}
+
+body.dark-theme {
+    background-color: #333;
+    color: #fff;
+}
+
+body.dark-theme .theme-toggle {
+    color: #fff;
+}
+
+body.dark-theme .theme-toggle:hover {
+    background-color: #444;
+}
+
+/* Add to your existing styles.css */
+body.dark-theme .quiz-question {
+    background-color: #444;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+body.dark-theme .answer-option {
+    background-color: #555;
+    border-color: #666;
+    color: #fff;
+}
+
+body.dark-theme .answer-option:hover {
+    background-color: #666;
+}
+
+body.dark-theme .answer-option.correct {
+    background-color: #1b5e20;
+    border-color: #2e7d32;
+    color: #ffffff;
+}
+
+body.dark-theme .answer-option.incorrect {
+    background-color: #b71c1c;
+    border-color: #c62828;
+    color: #ffffff;
+}
+
+body.dark-theme .answer-option.correct:hover {
+    background-color: #2e7d32;
+}
+
+body.dark-theme .answer-option.incorrect:hover {
+    background-color: #c62828;
+}
+
+body.dark-theme #quizStatus {
+    background-color: #444;
+    color: #fff;
+}
+
+
+body.dark-theme .button {
+    background-color: #666;
+}
+
+body.dark-theme .button:hover {
+    background-color: #777;
+}
+
+body.dark-theme #generateAgainButton {
+    background-color: #1976D2;
+}
+
+body.dark-theme #generateAgainButton:hover {
+    background-color: #1565C0;
+}
+
+body.dark-theme .error-message {
+    background-color: #642027;
+    border-color: #dc3545;
+    color: #fff;
+}
+
+body.dark-theme .category-button {
+    background-color: #444;
+    border-color: #555;
+    color: #fff;
+}
+
+body.dark-theme .category-button:hover {
+    background-color: #555;
+}
+
 

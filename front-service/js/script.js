@@ -2,9 +2,14 @@ import { UIManager } from './uiManager.js';
 import { QuizManager } from './quizManager.js';
 import { CategoryManager } from './categoryManager.js';
 import { APIService } from './apiService.js';
+import { ThemeManager } from './themeManager.js';
+
 
 document.addEventListener('DOMContentLoaded', () => {
     const elements = UIManager.getElements();
+
+    const themeManager = new ThemeManager();
+
 
     async function generateQuiz() {
         try {
@@ -43,4 +48,5 @@ document.addEventListener('DOMContentLoaded', () => {
         UIManager.switchView(elements.categoryView, elements.initialView));
     document.getElementById('goBackButton').addEventListener('click', () =>
         UIManager.switchView(elements.secondView, elements.initialView));
+
 });
