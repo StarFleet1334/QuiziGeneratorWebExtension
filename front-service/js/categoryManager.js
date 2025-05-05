@@ -1,3 +1,7 @@
+import {APIService} from "./apiService.js";
+import {UIManager} from "./uiManager.js";
+import {QuizManager} from "./quizManager.js";
+
 export class CategoryManager {
     static displayCategories(categoryMap) {
         const categoriesContainer = document.getElementById('categories-container');
@@ -38,7 +42,7 @@ export class CategoryManager {
         button.dataset.content = JSON.stringify(relatedContent);
 
         button.onclick = (event) => {
-            event.stopPropagation(); // Prevent event bubbling
+            event.stopPropagation();
             this.handleCategorySelect(category, relatedContent);
         };
 
@@ -47,8 +51,18 @@ export class CategoryManager {
     }
 
     static async handleCategorySelect(category, relatedContent) {
-        console.log(`Selected category: ${category}`);
-        console.log('Related content:', relatedContent);
+        const elements = UIManager.getElements();
+        try {
+            const content = await APIService.getTabContent();
+            if (content) {
+                const questions = await APIService.fetchFromServer('content', relatedContent[0]);
+                UIManager.switchView(elements.categoryView, elements.secondView);
+                QuizManager.createQuizUI(questions);
+
+            }
+        } catch (error) {
+            console.error("[Active Reading Quiz] Error:", error);
+        }
     }
 
     static showNoCategories(container) {
