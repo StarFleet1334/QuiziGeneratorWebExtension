@@ -44,9 +44,12 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('getUrlButton').addEventListener('click', generateQuiz);
     document.getElementById('chooseCategoryButton').addEventListener('click', generateCategories);
     document.getElementById('generateAgainButton').addEventListener('click', generateQuiz);
-    document.getElementById('categoryBackButton').addEventListener('click', () =>
-        UIManager.switchView(elements.categoryView, elements.initialView));
-    document.getElementById('goBackButton').addEventListener('click', () =>
-        UIManager.switchView(elements.secondView, elements.initialView));
-
+    document.getElementById('categoryBackButton').addEventListener('click', () =>{
+        QuizManager.resetQuestionCounter();
+        UIManager.switchView(elements.categoryView, elements.initialView);
+    });
+    document.getElementById('goBackButton').addEventListener('click', () => {
+        QuizManager.resetQuestionCounter();
+        UIManager.switchView(elements.secondView, elements.initialView);
+    });
 });

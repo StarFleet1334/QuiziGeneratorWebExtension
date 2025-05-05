@@ -364,4 +364,13 @@ body.dark-theme .category-button:hover {
     background-color: #555;
 }
 
+.question-counter {
+    text-align: center;
+    margin: 10px 0;
+    font-size: 14px;
+    color: #666;
+}
 
+body.dark-theme .question-counter {
+    color: #ccc;
+}
