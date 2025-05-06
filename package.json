@@ -1,0 +1,12 @@
+{
+  "name": "project-runner",
+  "version": "1.0.0",
+  "scripts": {
+    "start:life": "cd life-service && uvicorn app.main:app --reload --port 8001",
+    "start:back": "cd back-service && .\\gradlew bootRun",
+    "start:all": "concurrently \"npm run start:life\" \"npm run start:back\""
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}

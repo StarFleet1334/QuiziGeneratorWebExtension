@@ -2,12 +2,16 @@ import { UIManager } from './uiManager.js';
 
 export class QuizManager {
     static questionCounter = 0;
+    static isCurrentQuestionAnswered = false;
+
 
     static createQuizUI(questions) {
         const { quizContainer } = UIManager.getElements();
         quizContainer.innerHTML = '';
 
         this.questionCounter++;
+        this.isCurrentQuestionAnswered = false;
+
 
         document.getElementById('currentQuestion').textContent = this.questionCounter;
 
@@ -86,12 +90,13 @@ export class QuizManager {
             selectedLabel.classList.add('incorrect');
             correctLabel.classList.add('correct');
         }
-
+        this.isCurrentQuestionAnswered = true;
         allOptions.forEach(opt => opt.style.pointerEvents = 'none');
     }
 
     static resetQuestionCounter() {
         this.questionCounter = 0;
+        this.isCurrentQuestionAnswered = false;
         document.getElementById('currentQuestion').textContent = '1';
     }
 

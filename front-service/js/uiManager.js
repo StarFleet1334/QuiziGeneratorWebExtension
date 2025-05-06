@@ -29,4 +29,58 @@ export class UIManager {
             </div>
         `;
     }
+
+    static showCustomAlert(message) {
+        const existingAlert = document.querySelector('.custom-alert');
+        if (existingAlert) {
+            existingAlert.remove();
+        }
+
+        const alertContainer = document.getElementById('alertContainer');
+        const buttonsContainer = document.querySelector('#secondView');
+        const buttonsRect = buttonsContainer.getBoundingClientRect();
+
+        const alertDiv = document.createElement('div');
+        alertDiv.className = 'custom-alert';
+
+        const messageDiv = document.createElement('div');
+        messageDiv.className = 'alert-message';
+        messageDiv.textContent = message;
+
+        const closeButton = document.createElement('button');
+        closeButton.className = 'alert-close';
+        closeButton.textContent = '×';
+        closeButton.onclick = () => {
+            alertDiv.classList.add('hiding');
+            setTimeout(() => alertDiv.remove(), 300);
+        };
+
+        alertDiv.appendChild(messageDiv);
+        alertDiv.appendChild(closeButton);
+
+        // Append to alertContainer instead of body
+        alertContainer.appendChild(alertDiv);
+
+        // Calculate position relative to viewport
+        const topPosition = Math.min(
+            buttonsRect.bottom + window.scrollY + 20,
+            window.innerHeight - alertDiv.offsetHeight - 20
+        );
+
+        // Update CSS for positioning
+        alertDiv.style.cssText = `
+        position: absolute;
+        top: ${topPosition}px;
+        left: 50%;
+        transform: translateX(-50%);
+    `;
+
+        setTimeout(() => {
+            if (alertDiv.parentElement) {
+                alertDiv.classList.add('hiding');
+                setTimeout(() => alertDiv.remove(), 300);
+            }
+        }, 3000);
+    }
+
 }

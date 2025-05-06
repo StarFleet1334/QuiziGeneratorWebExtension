@@ -10,9 +10,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const themeManager = new ThemeManager();
 
-
     async function generateQuiz() {
         try {
+            if (!QuizManager.isCurrentQuestionAnswered && QuizManager.questionCounter > 0) {
+                UIManager.showCustomAlert("Please answer the current question before generating a new one!");
+                return;
+            }
+
+
             const content = await APIService.getTabContent();
             if (content) {
                 const questions = await APIService.fetchFromServer('content', content);
