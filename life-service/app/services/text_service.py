@@ -52,19 +52,23 @@ class TextService:
         The question must be directly answerable from the text.
         One option must be the correct answer that appears in the text.
         Other options must be clearly wrong but plausible.
+        Place the correct answer randomly among the options.
         Format your response exactly like this:
-    
+
         Question: [Write a clear question]
-        A) [First option - use exact text if it's the correct answer]
-        B) [Second option]
-        C) [Third option]
-        D) [Fourth option]
+        A) [Option]
+        B) [Option]
+        C) [Option]
+        D) [Option]
+        
         Correct: [Write A, B, C, or D - must correspond to the option that matches the text exactly]
     
         Text to use:
         {chunk}
     
-        Important: The correct answer MUST be a fact stated in the text. Do not make up or infer answers."""
+        Important: 
+        - The correct answer MUST be a fact stated in the text. Do not make up or infer answers.
+        - Place the correct answer randomly among A, B, C, or D."""
 
         return full_prompt
 

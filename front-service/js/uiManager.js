@@ -4,8 +4,10 @@ export class UIManager {
             initialView: document.getElementById('initialView'),
             secondView: document.getElementById('secondView'),
             categoryView: document.getElementById('categoryView'),
+            resultsView: document.getElementById('resultsView'),
             quizContainer: document.getElementById('quizContainer'),
             categoriesContainer: document.getElementById('categories-container')
+
         };
     }
 

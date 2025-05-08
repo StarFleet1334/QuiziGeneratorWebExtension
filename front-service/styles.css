@@ -445,3 +445,29 @@ body.dark-theme .question-counter {
         transform: translate(-50%, 20px);
     }
 }
+
+
+.results-container {
+    text-align: center;
+    padding: 20px;
+    margin: 20px 0;
+}
+
+.results-icon {
+    font-size: 48px;
+    color: #ffd700;
+    margin-bottom: 20px;
+}
+
+.score-text {
+    font-size: 18px;
+    margin: 15px 0;
+}
+
+body.dark-theme .results-icon {
+    color: #ffc107;
+}
+
+body.dark-theme .score-text {
+    color: #fff;
+}

@@ -54,7 +54,12 @@ document.addEventListener('DOMContentLoaded', () => {
         UIManager.switchView(elements.categoryView, elements.initialView);
     });
     document.getElementById('goBackButton').addEventListener('click', () => {
-        QuizManager.resetQuestionCounter();
-        UIManager.switchView(elements.secondView, elements.initialView);
+        QuizManager.showResults();
+        UIManager.switchView(elements.secondView, elements.resultsView);
     });
+    document.getElementById('retryButton').addEventListener('click', () => {
+        QuizManager.resetQuestionCounter();
+        UIManager.switchView(elements.resultsView, elements.initialView);
+    });
+
 });

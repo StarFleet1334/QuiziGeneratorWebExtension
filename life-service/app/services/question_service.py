@@ -1,3 +1,4 @@
+import random
 import re
 from typing import Optional, Dict, List
 
@@ -26,9 +27,22 @@ def robust_parse_question(text: str) -> Optional[Dict]:
             correct_answer and
             correct_answer in ['A', 'B', 'C', 'D'] and
             all(k in choices for k in ['A', 'B', 'C', 'D'])):
+
+        correct_content = choices[correct_answer]
+
+        choice_items = list(choices.items())
+
+        random.shuffle(choice_items)
+
+        shuffled_choices = {}
+        for new_label, (_, content) in zip(['A', 'B', 'C', 'D'], choice_items):
+            shuffled_choices[new_label] = content
+            if content == correct_content:
+                correct_answer = new_label
+
         return {
             "question": question,
-            "choices": choices,
+            "choices": shuffled_choices,
             "correct_answer": correct_answer
         }
     return None
