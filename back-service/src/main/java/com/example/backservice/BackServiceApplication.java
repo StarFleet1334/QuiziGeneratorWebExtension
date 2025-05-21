@@ -20,8 +20,10 @@ public class BackServiceApplication {
          * 5. If any error occurs like while generating cause, AI has a rate limit pop up some error page ( NOT DONE )
          * 6. For Some reason when the app is run and tested on 1 site and then moves to the next on next, It does not extract from that
          * but from the previous website ( NOT DONE )
-         * 7. Introduce it in quiz's, question where u have to type ( NOT DONE )
+         * 7. Introduce it in quizzes, question where u have to type ( NOT DONE )
          * 8. Based on settings provide that type of questions ( NOT DONE )
+         * 9. Add time limit in settings, time Limit of a Quiz ( NOT DONE )
+         * 10. Based on time limit, time becomes 0 quiz is ended before u click finish, same for question ( NOT DONE )
          */
     }
 

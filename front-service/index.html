@@ -83,10 +83,23 @@
                     <input type="checkbox" id="typeAnswerToggle">
                     <span class="slider round"></span>
                 </label>
+            </div>
+            <div class="setting-item">
+                <label class="switch-label">Time Limit</label>
+                <div class="time-input-container">
+                    <input type="number" id="timeInput" min="1" max="60" class="time-input">
+                    <div class="time-unit-selector">
+                        <button class="time-unit-btn" data-unit="minutes">Min</button>
+                        <button class="time-unit-btn" data-unit="seconds">Sec</button>
+                    </div>
+                </div>
+            </div>
+
         </div>
         <div class="button-container">
             <button class="button" id="settingsBackButton">Go Back</button>
         </div>
+
     </div>
 
 </div>

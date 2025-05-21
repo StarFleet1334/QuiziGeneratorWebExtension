@@ -12,6 +12,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const defaultQuestionsToggle = document.getElementById('defaultQuestionsToggle');
     const trueFalseQuestionsToggle = document.getElementById('trueFalseToggle');
     const typeAnswerQuestionsToggle = document.getElementById("typeAnswerToggle");
+    const timeInput = document.getElementById('timeInput');
+    const timeUnitButtons = document.querySelectorAll('.time-unit-btn')
 
     const savedSettings = SettingsManager.getSettings();
     defaultQuestionsToggle.checked = savedSettings.defaultQuestions;
@@ -19,6 +21,13 @@ document.addEventListener('DOMContentLoaded', () => {
     typeAnswerQuestionsToggle.checked = savedSettings.typeAnswerQuestions;
 
     const themeManager = new ThemeManager();
+
+    timeInput.value = savedSettings.timeLimit.value;
+    timeUnitButtons.forEach(btn => {
+        if (btn.dataset.unit === savedSettings.timeLimit.unit) {
+            btn.classList.add('active');
+        }
+    });
 
     async function generateQuiz() {
         try {
@@ -76,5 +85,24 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById("settingsBackButton").addEventListener("click",() => {
         UIManager.switchView(elements.settingsView, elements.initialView);
     })
+
+    timeInput.addEventListener('change', () => {
+        const value = Math.min(Math.max(parseInt(e.target.value) || 1, 1), 60);
+        timeInput.value = value;
+        const activeUnit = document.querySelector('.time-unit-btn.active').dataset.unit;
+        SettingsManager.updateTimeLimit(value, activeUnit);
+    });
+
+    timeUnitButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            timeUnitButtons.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            SettingsManager.updateTimeLimit(
+                parseInt(timeInput.value),
+                btn.dataset.unit
+            );
+        });
+    });
+
 
 });

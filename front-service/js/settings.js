@@ -6,6 +6,10 @@ export class SettingsManager {
         defaultQuestions: true,
         trueFalseQuestions: false,
         typeAnswerQuestions: false,
+        timeLimit: {
+            value: 5,
+            unit: 'minutes'
+        }
     };
 
     static saveSettings(settings) {
@@ -21,5 +25,11 @@ export class SettingsManager {
         const currentSettings = this.getSettings();
         currentSettings[key] = value;
         this.saveSettings(currentSettings);
+    }
+
+    static updateTimeLimit(value,unit) {
+        const currentSettings = this.getSettings();
+        currentSettings.timeLimit = {value,unit};
+        this.saveSettings(currentSettings)
     }
 }
