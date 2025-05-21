@@ -86,12 +86,13 @@ document.addEventListener('DOMContentLoaded', () => {
         UIManager.switchView(elements.settingsView, elements.initialView);
     })
 
-    timeInput.addEventListener('change', () => {
+    timeInput.addEventListener('change', (e) => {
         const value = Math.min(Math.max(parseInt(e.target.value) || 1, 1), 60);
         timeInput.value = value;
         const activeUnit = document.querySelector('.time-unit-btn.active').dataset.unit;
         SettingsManager.updateTimeLimit(value, activeUnit);
     });
+
 
     timeUnitButtons.forEach(btn => {
         btn.addEventListener('click', () => {
