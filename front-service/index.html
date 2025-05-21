@@ -23,6 +23,7 @@
         <div class="button-container-vertical">
             <button class="button" id="getUrlButton">Start Quiz</button>
             <button class="button" id="chooseCategoryButton">Choose Category</button>
+            <button class="button" id="settingsButton">Settings</button>
         </div>
 
     </div>
@@ -55,6 +56,36 @@
         </div>
         <div class="button-container">
             <button class="button" id="retryButton">Try Again</button>
+        </div>
+    </div>
+
+
+    <div id="settingsView" style="display: none;">
+        <h2>Settings</h2>
+        <div class="settings-container">
+            <div class="setting-item">
+                <label class="switch-label">Default Questions</label>
+                <label class="switch">
+                    <input type="checkbox" id="defaultQuestionsToggle">
+                    <span class="slider round"></span>
+                </label>
+            </div>
+            <div class="setting-item">
+                <label class="switch-label">True/False Questions</label>
+                <label class="switch">
+                    <input type="checkbox" id="trueFalseToggle">
+                    <span class="slider round"></span>
+                </label>
+            </div>
+            <div class="setting-item">
+                <label class="switch-label">Type answer Questions</label>
+                <label class="switch">
+                    <input type="checkbox" id="typeAnswerToggle">
+                    <span class="slider round"></span>
+                </label>
+        </div>
+        <div class="button-container">
+            <button class="button" id="settingsBackButton">Go Back</button>
         </div>
     </div>
 

@@ -3,10 +3,20 @@ import { QuizManager } from './quizManager.js';
 import { CategoryManager } from './categoryManager.js';
 import { APIService } from './apiService.js';
 import { ThemeManager } from './themeManager.js';
+import {SettingsManager} from "./settings.js";
 
 
 document.addEventListener('DOMContentLoaded', () => {
     const elements = UIManager.getElements();
+
+    const defaultQuestionsToggle = document.getElementById('defaultQuestionsToggle');
+    const trueFalseQuestionsToggle = document.getElementById('trueFalseToggle');
+    const typeAnswerQuestionsToggle = document.getElementById("typeAnswerToggle");
+
+    const savedSettings = SettingsManager.getSettings();
+    defaultQuestionsToggle.checked = savedSettings.defaultQuestions;
+    trueFalseQuestionsToggle.checked = savedSettings.trueFalseQuestions;
+    typeAnswerQuestionsToggle.checked = savedSettings.typeAnswerQuestions;
 
     const themeManager = new ThemeManager();
 
@@ -45,7 +55,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-
     document.getElementById('getUrlButton').addEventListener('click', generateQuiz);
     document.getElementById('chooseCategoryButton').addEventListener('click', generateCategories);
     document.getElementById('generateAgainButton').addEventListener('click', generateQuiz);
@@ -61,5 +70,11 @@ document.addEventListener('DOMContentLoaded', () => {
         QuizManager.resetQuestionCounter();
         UIManager.switchView(elements.resultsView, elements.initialView);
     });
+    document.getElementById("settingsButton").addEventListener("click", () => {
+        UIManager.switchView(elements.initialView, elements.settingsView);
+    })
+    document.getElementById("settingsBackButton").addEventListener("click",() => {
+        UIManager.switchView(elements.settingsView, elements.initialView);
+    })
 
 });

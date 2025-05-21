@@ -6,8 +6,8 @@ export class UIManager {
             categoryView: document.getElementById('categoryView'),
             resultsView: document.getElementById('resultsView'),
             quizContainer: document.getElementById('quizContainer'),
-            categoriesContainer: document.getElementById('categories-container')
-
+            categoriesContainer: document.getElementById('categories-container'),
+            settingsView: document.getElementById('settingsView')
         };
     }
 
