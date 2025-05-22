@@ -544,21 +544,41 @@ input:checked + .slider:before {
 
 .time-input-container {
     display: flex;
-    align-items: center;
+    flex-direction: column;
     gap: 10px;
-    height: 34px;
 }
+
+.time-inputs {
+    display: flex;
+    gap: 15px;
+}
+
+.time-field {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.time-field label {
+    font-size: 0.9em;
+    color: #666;
+}
+
 
 .time-input {
-    width: 50px;
-    height: 100%;
-    padding: 0 5px;
+    width: 70px;
+    padding: 5px;
     border: 1px solid #ccc;
     border-radius: 4px;
-    font-size: 14px;
-    text-align: center;
-
+    font-size: 1em;
 }
+
+.time-input:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 0 2px rgba(0,123,255,0.25);
+}
+
 
 .time-unit-selector {
     display: flex;
@@ -597,4 +617,33 @@ input:checked + .slider:before {
     background: #1565c0;
 }
 
+.quiz-timer {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    padding: 10px 15px;
+    background-color: #fff;
+    border: 2px solid #007bff;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    font-size: 1.2em;
+    font-weight: bold;
+    z-index: 1000;
+    color: #000;
+    display: block;
+    transition: opacity 0.3s ease;
+}
 
+.quiz-timer.warning {
+    background-color: #fff3cd;
+    color: #856404;
+    border-color: #dc3545;
+    animation: pulse 1s infinite;
+}
+
+
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.7; }
+    100% { opacity: 1; }
+}

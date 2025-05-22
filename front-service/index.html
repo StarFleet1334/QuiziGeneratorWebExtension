@@ -87,11 +87,17 @@
             <div class="setting-item">
                 <label class="switch-label">Time Limit</label>
                 <div class="time-input-container">
-                    <input type="number" id="timeInput" min="1" max="60" class="time-input">
-                    <div class="time-unit-selector">
-                        <button class="time-unit-btn" data-unit="minutes">Min</button>
-                        <button class="time-unit-btn" data-unit="seconds">Sec</button>
+                    <div class="time-inputs">
+                        <div class="time-field">
+                            <label>Minutes:</label>
+                            <input type="number" id="minutesInput" min="1" max="10" value="5" class="time-input">
+                        </div>
+                        <div class="time-field">
+                            <label>Seconds:</label>
+                            <input type="number" id="secondsInput" min="60" max="600" value="60" class="time-input">
+                        </div>
                     </div>
+
                 </div>
             </div>
 

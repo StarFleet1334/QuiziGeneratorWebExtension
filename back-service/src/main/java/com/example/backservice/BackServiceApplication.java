@@ -22,7 +22,6 @@ public class BackServiceApplication {
          * but from the previous website ( NOT DONE )
          * 7. Introduce it in quizzes, question where u have to type ( NOT DONE )
          * 8. Based on settings provide that type of questions ( NOT DONE )
-         * 9. Based on time limit, time becomes 0 quiz is ended before u click finish, same for question ( NOT DONE )
          */
     }
 

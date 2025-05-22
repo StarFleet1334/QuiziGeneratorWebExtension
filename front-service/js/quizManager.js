@@ -1,12 +1,96 @@
 import {UIManager} from './uiManager.js';
+import {Timer} from './timer.js';
+import {SettingsManager} from "./settings.js";
 
 export class QuizManager {
     static questionCounter = 0;
     static isCurrentQuestionAnswered = false;
     static correctAnswers = 0;
     static answeredQuestions = 0;
+    static timer = null;
+    static timerDisplay = null;
+    static currentTimerValue = null;
+
+
+    static initializeTimer() {
+        let remainingSeconds = null;
+        if (this.timer) {
+            remainingSeconds = this.timer.remainingSeconds;
+            this.timer.stop();
+            this.timer = null;
+        }
+
+        if (this.timerDisplay) {
+            this.timerDisplay.remove();
+            this.timerDisplay = null;
+        }
+
+        this.timerDisplay = document.createElement('div');
+        this.timerDisplay.className = 'quiz-timer';
+        document.body.appendChild(this.timerDisplay);
+
+        const settings = SettingsManager.getSettings();
+        if (!settings || !settings.timeLimit) {
+            console.error("Time limit settings not found");
+            return;
+        }
+
+        const { minutes, seconds } = settings.timeLimit;
+
+        // Initialize timer with the minutes and seconds directly
+        this.timer = new Timer(minutes, seconds, remainingSeconds);
+
+        this.updateTimerDisplay(this.timer.getTimeRemaining());
+
+        this.timer.start(
+            (timeRemaining) => {
+                this.updateTimerDisplay(timeRemaining);
+            },
+            () => {
+                this.handleTimeUp();
+            }
+        );
+
+
+    }
+
+    static updateTimerDisplay(timeRemaining) {
+        if (!this.timerDisplay) return;
+
+        const minutes = String(timeRemaining.minutes).padStart(2, '0');
+        const seconds = String(timeRemaining.seconds).padStart(2, '0');
+        this.timerDisplay.textContent = `Time: ${minutes}:${seconds}`;
+        this.timerDisplay.style.opacity = '1';
+
+        if (timeRemaining.total < 60) {
+            this.timerDisplay.classList.add('warning');
+        }
+    }
+
+
+    static handleTimeUp() {
+        this.showResults();
+        document.querySelectorAll('.answer-option').forEach(option => {
+            option.style.pointerEvents = 'none';
+        });
+        const elements = UIManager.getElements();
+        UIManager.switchView(elements.secondView, elements.resultsView);
+    }
+
+
 
     static createQuizUI(questions) {
+        if (this.timer) {
+            this.timer.stop();
+            this.timer = null;
+        }
+        if (this.timerDisplay) {
+            this.timerDisplay.remove();
+            this.timerDisplay = null;
+        }
+
+        this.initializeTimer();
+
         const {quizContainer} = UIManager.getElements();
         quizContainer.innerHTML = '';
 
@@ -100,6 +184,15 @@ export class QuizManager {
     }
 
     static showResults() {
+        if (this.timer) {
+            this.timer.stop();
+            this.timer = null;
+        }
+        if (this.timerDisplay) {
+            this.timerDisplay.remove();
+            this.timerDisplay = null;
+        }
+
         const correctAnswersElement = document.getElementById('correctAnswers');
         const totalQuestionsElement = document.getElementById('totalQuestions');
 
@@ -119,10 +212,20 @@ export class QuizManager {
 
 
     static resetQuestionCounter() {
+        if (this.timer) {
+            this.timer.stop();
+            this.timer = null;
+        }
+        if (this.timerDisplay) {
+            this.timerDisplay.remove();
+            this.timerDisplay = null;
+        }
+
         this.questionCounter = 0;
         this.isCurrentQuestionAnswered = false;
         this.correctAnswers = 0;
         this.answeredQuestions = 0;
+        this.currentTimerValue = null;
         document.getElementById('currentQuestion').textContent = '1';
     }
 
