@@ -25,7 +25,11 @@ async def generate_questions(req: TextRequest):
         random_chunk = choice(chunks)
         logger.debug(f"Selected chunk: {random_chunk}")
 
-        prompt = TextService.get_question_prompt(random_chunk)
+        prompt = TextService.get_question_prompt(
+            random_chunk,
+            req.trueFalseQuestions,
+        )
+
         logger.debug(f"Generated prompt: {prompt}")
         logger.info("Sending prompt to AI service")
 

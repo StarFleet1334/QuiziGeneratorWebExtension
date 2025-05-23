@@ -111,25 +111,30 @@ export class QuizManager {
         questionDiv.className = 'quiz-question';
         questionDiv.dataset.correctAnswer = question.correct_answer;
         questionDiv.dataset.questionNumber = index;
-
-        const observer = new IntersectionObserver((entries) => {
+        new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     document.getElementById('currentQuestion').textContent = questionDiv.dataset.questionNumber;
                 }
             });
         }, {threshold: 0.5});
-
-
         const questionText = document.createElement('div');
         questionText.className = 'question-text';
         questionText.textContent = `${question.question}`;
         questionDiv.appendChild(questionText);
 
-        Object.entries(question.choices).forEach(([choiceKey, choiceText]) => {
-            const label = this.createChoiceElement(choiceKey, choiceText, index, questionDiv);
-            questionDiv.appendChild(label);
-        });
+        if (Array.isArray(question.choicesList)) {
+            question.choicesList.forEach((choice, idx) => {
+                const label = this.createChoiceElement(choice, choice, index, questionDiv);
+                questionDiv.appendChild(label);
+            });
+        } else if (question.choices) {
+            Object.entries(question.choices).forEach(([choiceKey, choiceText]) => {
+                const label = this.createChoiceElement(choiceKey, choiceText, index, questionDiv);
+                questionDiv.appendChild(label);
+            });
+        }
+
 
         return questionDiv;
     }
@@ -144,10 +149,16 @@ export class QuizManager {
         radio.value = choiceKey;
 
         label.appendChild(radio);
-        label.appendChild(document.createTextNode(`${choiceKey}. ${choiceText}`));
+        if (choiceKey === 'True' || choiceKey === 'False') {
+            label.appendChild(document.createTextNode(choiceKey));
+        } else {
+            label.appendChild(document.createTextNode(`${choiceKey}. ${choiceText}`));
+        }
+
         this.addChoiceClickHandler(label, choiceKey, questionDiv);
 
         return label;
+
     }
 
     static addChoiceClickHandler(label, choiceKey, questionDiv) {
@@ -165,9 +176,9 @@ export class QuizManager {
         allOptions.forEach(opt => opt.classList.remove('correct', 'incorrect'));
 
         const correctAnswer = questionDiv.dataset.correctAnswer;
-        const correctLabel = questionDiv.querySelector(
-            `.answer-option input[value="${correctAnswer}"]`
-        ).parentElement;
+        const correctLabel = Array.from(allOptions).find(option =>
+            option.querySelector('input').value === correctAnswer
+        );
 
         if (choiceKey === correctAnswer) {
             selectedLabel.classList.add('correct');
@@ -175,13 +186,17 @@ export class QuizManager {
             console.log(`Correct answer! Total correct: ${this.correctAnswers}`);
         } else {
             selectedLabel.classList.add('incorrect');
-            correctLabel.classList.add('correct');
+            if (correctLabel) {
+                correctLabel.classList.add('correct');
+            }
         }
+
         this.isCurrentQuestionAnswered = true;
         questionDiv.dataset.answered = 'true';
         this.answeredQuestions++;
         allOptions.forEach(opt => opt.style.pointerEvents = 'none');
     }
+
 
     static showResults() {
         if (this.timer) {

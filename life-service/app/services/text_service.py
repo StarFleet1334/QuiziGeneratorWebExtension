@@ -1,3 +1,4 @@
+import random
 import re
 from typing import List, Dict, Optional
 
@@ -40,36 +41,57 @@ class TextService:
             """
 
     @staticmethod
-    def get_question_prompt(chunk: str, category: str = None) -> str:
+    def get_question_prompt(chunk: str, true_false_questions: bool = False,category: str = None) -> str:
+        is_true_false = true_false_questions and random.random() <= 0.6
+
         base_prompt = (
-            "Using ONLY the information from the given text, create one multiple-choice question"
+            "Using ONLY the information from the given text, create one "
+            f"{'true/false' if is_true_false else 'multiple-choice'} question"
         )
 
         if category:
             base_prompt += f" specifically about the topic: {category}"
 
-        full_prompt = f"""{base_prompt}
-        The question must be directly answerable from the text.
-        One option must be the correct answer that appears in the text.
-        Other options must be clearly wrong but plausible.
-        Place the correct answer randomly among the options.
-        Format your response exactly like this:
+        if is_true_false:
+            full_prompt = f"""{base_prompt}
+            The question must be directly answerable from the text.
+            Format your response exactly like this:
 
-        Question: [Write a clear question]
-        A) [Option]
-        B) [Option]
-        C) [Option]
-        D) [Option]
+            Question: [Write a clear statement that is either true or false based on the text]
+            Options:
+            True
+            False
+            
+            Correct: [Write True or False - must be based strictly on the text]
         
-        Correct: [Write A, B, C, or D - must correspond to the option that matches the text exactly]
+            Text to use:
+            {chunk}
+        
+            Important: 
+            - The statement must be either clearly true or false based on the text
+            - Do not make statements that require inference or outside knowledge"""
+        else:
+            full_prompt = f"""{base_prompt}
+            The question must be directly answerable from the text.
+            One option must be the correct answer that appears in the text.
+            Other options must be clearly wrong but plausible.
+            Place the correct answer randomly among the options.
+            Format your response exactly like this:
     
-        Text to use:
-        {chunk}
-    
-        Important: 
-        - The correct answer MUST be a fact stated in the text. Do not make up or infer answers.
-        - Place the correct answer randomly among A, B, C, or D."""
-
+            Question: [Write a clear question]
+            A) [Option]
+            B) [Option]
+            C) [Option]
+            D) [Option]
+            
+            Correct: [Write A, B, C, or D - must correspond to the option that matches the text exactly]
+        
+            Text to use:
+            {chunk}
+        
+            Important: 
+            - The correct answer MUST be a fact stated in the text. Do not make up or infer answers.
+            - Place the correct answer randomly among A, B, C, or D."""
         return full_prompt
 
     @staticmethod
@@ -102,26 +124,32 @@ class TextService:
 
             if line.lower().startswith('question:'):
                 question = line[9:].strip()
+            elif line.lower() in ['true', 'false']:
+                # For true/false questions, store choices in the choices map
+                choices[line.capitalize()] = line.capitalize()
             elif re.match(r'^[A-D][\)\.]\s', line):
                 label = line[0]
                 content = line[2:].strip()
                 choices[label] = content
             elif line.lower().startswith('correct:'):
-                correct_answer = line[8:].strip().upper()
-                if correct_answer and len(correct_answer) == 1:
-                    correct_answer = correct_answer[0]
+                correct_answer = line[8:].strip()
+                if correct_answer.upper() in ['TRUE', 'FALSE']:
+                    correct_answer = correct_answer.capitalize()
+                else:
+                    correct_answer = correct_answer.upper()
+                    if correct_answer and len(correct_answer) == 1:
+                        correct_answer = correct_answer[0]
 
-        if (question and
-                len(choices) == 4 and
-                correct_answer and
-                correct_answer in ['A', 'B', 'C', 'D'] and
-                all(k in choices for k in ['A', 'B', 'C', 'D'])):
+        if question and choices and correct_answer:
             return {
                 "question": question,
                 "choices": choices,
-                "correct_answer": correct_answer
+                "choicesList": None,
+                "correct_answer": correct_answer,
+                "type": "true_false" if correct_answer in ["True", "False"] else "multiple_choice"
             }
         return None
+
 
     @staticmethod
     async def is_chunk_relevant(chunk: str, category: str, ai_service) -> bool:

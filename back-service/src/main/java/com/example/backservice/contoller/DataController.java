@@ -25,9 +25,9 @@ public class DataController implements DataControllerInterface {
         List<QuestionResponse> generatedQuestions;
         if (dataService.getContent() == null) {
             cleanedContent = dataService.preProcessContent(content.getContent());
-            generatedQuestions = dataService.generateQuestions(cleanedContent);
+            generatedQuestions = dataService.generateQuestions(cleanedContent,content.isTrueFalseQuestions(),content.isTypeAnswerQuestions());
         } else {
-            generatedQuestions = dataService.generateQuestions(dataService.getContent());
+            generatedQuestions = dataService.generateQuestions(dataService.getContent(),content.isTrueFalseQuestions(),content.isTypeAnswerQuestions());
         }
         return ResponseEntity.ok(generatedQuestions);
     }

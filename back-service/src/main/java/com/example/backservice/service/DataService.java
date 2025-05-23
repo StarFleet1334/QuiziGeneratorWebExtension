@@ -14,6 +14,7 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.core.ParameterizedTypeReference;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
@@ -37,13 +38,30 @@ public class DataService {
         this.apiProperties = apiProperties;
     }
 
-    private <T> ResponseEntity<T> makeApiRequest(String url, String content, Class<T> responseType) {
-        return makeApiRequest(url, content, null, responseType);
+    private <T> ResponseEntity<T> makeApiRequest(String url, String content,
+                                                 ParameterizedTypeReference<T> typeReference) {
+        return makeApiRequest(url, content,typeReference,null);
     }
 
     private <T> ResponseEntity<T> makeApiRequest(String url, String content,
+                                                 boolean isTrueFalseQuestions,
+                                                 boolean isTypeAnswerQuestions,
                                                  ParameterizedTypeReference<T> typeReference) {
-        return makeApiRequest(url, content, typeReference, null);
+        return makeApiRequest(url, content,isTrueFalseQuestions,isTypeAnswerQuestions, typeReference, null);
+    }
+
+    private <T> ResponseEntity<T> makeApiRequest(String url, String content,
+                                                 boolean isTrueFalseQuestions,
+                                                 boolean isTypeAnswerQuestions,
+                                                 ParameterizedTypeReference<T> typeReference, Class<T> responseType) {
+        validateContent(content);
+
+        HttpEntity<Map<String, Object>> requestEntity = createRequestEntity(content, isTrueFalseQuestions, isTypeAnswerQuestions);
+
+        return executeWithRetry(() -> {
+            return restTemplate.exchange(url, HttpMethod.POST, requestEntity, typeReference);
+        });
+
     }
 
     private <T> ResponseEntity<T> makeApiRequest(String url, String content,
@@ -61,6 +79,7 @@ public class DataService {
         });
     }
 
+
     private void validateContent(String content) {
         if (content == null || content.trim().isEmpty()) {
             throw new IllegalArgumentException("Content cannot be null or empty");
@@ -74,6 +93,19 @@ public class DataService {
         Map<String, String> requestBody = Map.of("text", content);
         return new HttpEntity<>(requestBody, headers);
     }
+
+    private HttpEntity<Map<String, Object>> createRequestEntity(String content, boolean trueFalseQuestions, boolean typeAnswerQuestions) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        Map<String, Object> requestBody = new HashMap<>();
+        requestBody.put("text", content);
+        requestBody.put("trueFalseQuestions", trueFalseQuestions);
+        requestBody.put("typeAnswerQuestions", typeAnswerQuestions);
+
+        return new HttpEntity<>(requestBody, headers);
+    }
+
 
     private <T> T executeWithRetry(Supplier<T> operation) {
         int attempts = 0;
@@ -103,15 +135,17 @@ public class DataService {
         }
     }
 
-    public List<QuestionResponse> generateQuestions(String content) {
+    public List<QuestionResponse> generateQuestions(String content,boolean isTrueFalseQuestions,boolean isTypeAnswerQuestions) {
         LOGGER.info("Generating questions for content length: {}", content.length());
 
         ResponseEntity<Map<String, List<QuestionResponse>>> response = makeApiRequest(
                 apiProperties.getQuestionsUrl(),
                 content,
-                new ParameterizedTypeReference<>() {
-                }
+                isTrueFalseQuestions,
+                isTypeAnswerQuestions,
+                new ParameterizedTypeReference<>() {}
         );
+
 
         if (response.getBody() == null || !response.getBody().containsKey("questions")) {
             throw new ApiResponseException("Invalid response format from questions API");
