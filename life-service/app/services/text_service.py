@@ -41,13 +41,26 @@ class TextService:
             """
 
     @staticmethod
-    def get_question_prompt(chunk: str, true_false_questions: bool = False,category: str = None) -> str:
-        is_true_false = true_false_questions and random.random() <= 0.6
+    def get_question_prompt(chunk: str, true_false_questions: bool = False,type_answer_questions: bool = False,category: str = None) -> str:
+        rand = random.random()
+
+        is_true_false = true_false_questions and rand <= 0.33
+        is_type_answer = type_answer_questions and 0.33 < rand <= 0.66
 
         base_prompt = (
             "Using ONLY the information from the given text, create one "
-            f"{'true/false' if is_true_false else 'multiple-choice'} question"
         )
+
+        if is_true_false:
+            base_prompt += "true/false question"
+        elif is_type_answer:
+            base_prompt += "short-answer question"
+        else:
+            base_prompt += "multiple-choice question"
+
+        if category:
+            base_prompt += f" specifically about the topic: {category}"
+
 
         if category:
             base_prompt += f" specifically about the topic: {category}"
@@ -70,6 +83,22 @@ class TextService:
             Important: 
             - The statement must be either clearly true or false based on the text
             - Do not make statements that require inference or outside knowledge"""
+        elif is_type_answer:
+            full_prompt = f"""{base_prompt}
+            The question must be directly answerable from the text.
+            Format your response exactly like this:
+    
+            Question: [Write a clear question that requires a short answer]
+            
+            Correct: [Write the correct answer - must be based strictly on the text]
+        
+            Text to use:
+            {chunk}
+        
+            Important: 
+            - The correct answer MUST be a fact stated in the text
+            - The answer should be brief (1-3 words)
+            - Do not make questions that require inference or outside knowledge"""
         else:
             full_prompt = f"""{base_prompt}
             The question must be directly answerable from the text.
@@ -125,7 +154,6 @@ class TextService:
             if line.lower().startswith('question:'):
                 question = line[9:].strip()
             elif line.lower() in ['true', 'false']:
-                # For true/false questions, store choices in the choices map
                 choices[line.capitalize()] = line.capitalize()
             elif re.match(r'^[A-D][\)\.]\s', line):
                 label = line[0]
@@ -135,18 +163,36 @@ class TextService:
                 correct_answer = line[8:].strip()
                 if correct_answer.upper() in ['TRUE', 'FALSE']:
                     correct_answer = correct_answer.capitalize()
+                elif not choices:
+                    correct_answer = correct_answer
                 else:
                     correct_answer = correct_answer.upper()
                     if correct_answer and len(correct_answer) == 1:
                         correct_answer = correct_answer[0]
 
-        if question and choices and correct_answer:
+        if question and correct_answer:
+            question_type = "multiple_choice"
+            if correct_answer in ["True", "False"]:
+                question_type = "true_false"
+            elif not choices:
+                question_type = "type_answer"
+                return {
+                    "question": question,
+                    "choices": None,
+                    "choicesList": None,
+                    "correct_answer": correct_answer,
+                    "type": question_type
+                }
+
+            if question_type != "type_answer" and not choices:
+                return None
+
             return {
                 "question": question,
                 "choices": choices,
                 "choicesList": None,
                 "correct_answer": correct_answer,
-                "type": "true_false" if correct_answer in ["True", "False"] else "multiple_choice"
+                "type": question_type
             }
         return None
 

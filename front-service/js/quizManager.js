@@ -37,7 +37,6 @@ export class QuizManager {
 
         const { minutes, seconds } = settings.timeLimit;
 
-        // Initialize timer with the minutes and seconds directly
         this.timer = new Timer(minutes, seconds, remainingSeconds);
 
         this.updateTimerDisplay(this.timer.getTimeRemaining());
@@ -70,8 +69,11 @@ export class QuizManager {
 
     static handleTimeUp() {
         this.showResults();
-        document.querySelectorAll('.answer-option').forEach(option => {
-            option.style.pointerEvents = 'none';
+        document.querySelectorAll('.type-answer-input, .type-answer-submit, .answer-option').forEach(element => {
+            element.disabled = true;
+            if (element.classList.contains('answer-option')) {
+                element.style.pointerEvents = 'none';
+            }
         });
         const elements = UIManager.getElements();
         UIManager.switchView(elements.secondView, elements.resultsView);
@@ -79,7 +81,13 @@ export class QuizManager {
 
 
 
+
     static createQuizUI(questions) {
+        if (!Array.isArray(questions) || questions.length === 0) {
+            console.error('No questions provided or invalid questions format');
+            return;
+        }
+
         if (this.timer) {
             this.timer.stop();
             this.timer = null;
@@ -92,52 +100,155 @@ export class QuizManager {
         this.initializeTimer();
 
         const {quizContainer} = UIManager.getElements();
-        quizContainer.innerHTML = '';
+        if (!quizContainer) {
+            console.error('Quiz container not found');
+            return;
+        }
 
+        quizContainer.innerHTML = '';
         this.questionCounter++;
         this.isCurrentQuestionAnswered = false;
 
-        document.getElementById('currentQuestion').textContent = this.questionCounter;
-
+        const currentQuestionElement = document.getElementById('currentQuestion');
+        if (currentQuestionElement) {
+            currentQuestionElement.textContent = this.questionCounter;
+        }
 
         questions.forEach((question, index) => {
-            const questionDiv = this.createQuestionElement(question, index + 1);
-            quizContainer.appendChild(questionDiv);
+            try {
+                if (!question || !question.question) {
+                    console.error(`Invalid question format at index ${index}`, question);
+                    return;
+                }
+
+                const questionDiv = this.createQuestionElement(question, index + 1);
+                if (questionDiv) {
+                    quizContainer.appendChild(questionDiv);
+                }
+            } catch (error) {
+                console.error(`Error creating question element at index ${index}:`, error);
+            }
         });
     }
 
-    static createQuestionElement(question, index) {
-        const questionDiv = document.createElement('div');
-        questionDiv.className = 'quiz-question';
-        questionDiv.dataset.correctAnswer = question.correct_answer;
-        questionDiv.dataset.questionNumber = index;
-        new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    document.getElementById('currentQuestion').textContent = questionDiv.dataset.questionNumber;
-                }
-            });
-        }, {threshold: 0.5});
-        const questionText = document.createElement('div');
-        questionText.className = 'question-text';
-        questionText.textContent = `${question.question}`;
-        questionDiv.appendChild(questionText);
 
-        if (Array.isArray(question.choicesList)) {
-            question.choicesList.forEach((choice, idx) => {
-                const label = this.createChoiceElement(choice, choice, index, questionDiv);
-                questionDiv.appendChild(label);
-            });
-        } else if (question.choices) {
-            Object.entries(question.choices).forEach(([choiceKey, choiceText]) => {
-                const label = this.createChoiceElement(choiceKey, choiceText, index, questionDiv);
-                questionDiv.appendChild(label);
-            });
+    static createQuestionElement(question, index) {
+        try {
+            const questionDiv = document.createElement('div');
+            questionDiv.className = 'quiz-question';
+            questionDiv.dataset.correctAnswer = question.correct_answer;
+            questionDiv.dataset.questionNumber = index;
+            questionDiv.dataset.type = question.type || 'multiple_choice';
+
+            const questionText = document.createElement('div');
+            questionText.className = 'question-text';
+            questionText.textContent = question.question;
+            questionDiv.appendChild(questionText);
+
+            new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const currentQuestion = document.getElementById('currentQuestion');
+                        if (currentQuestion) {
+                            currentQuestion.textContent = questionDiv.dataset.questionNumber;
+                        }
+                    }
+                });
+            }, {threshold: 0.5}).observe(questionDiv);
+
+            switch (question.type) {
+                case 'type_answer':
+                    const typeAnswerContainer = this.createTypeAnswerElement(index, questionDiv);
+                    questionDiv.appendChild(typeAnswerContainer);
+                    break;
+                case 'true_false':
+                    ['True', 'False'].forEach(option => {
+                        const label = this.createChoiceElement(option, option, index, questionDiv);
+                        questionDiv.appendChild(label);
+                    });
+                    break;
+                default:
+                    if (Array.isArray(question.choicesList)) {
+                        question.choicesList.forEach(choice => {
+                            const label = this.createChoiceElement(choice, choice, index, questionDiv);
+                            questionDiv.appendChild(label);
+                        });
+                    } else if (question.choices) {
+                        Object.entries(question.choices).forEach(([key, value]) => {
+                            const label = this.createChoiceElement(key, value, index, questionDiv);
+                            questionDiv.appendChild(label);
+                        });
+                    }
+            }
+
+            return questionDiv;
+        } catch (error) {
+            console.error('Error in createQuestionElement:', error);
+            return null;
+        }
+    }
+
+
+    static createTypeAnswerElement(index, questionDiv) {
+        const container = document.createElement('div');
+        container.className = 'type-answer-container';
+
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.className = 'type-answer-input';
+        input.name = `question${index}`;
+        input.placeholder = 'Type your answer here...';
+
+        const submitButton = document.createElement('button');
+        submitButton.className = 'type-answer-submit';
+        submitButton.textContent = 'Submit';
+        submitButton.addEventListener('click', () => {
+            if (!input.value.trim()) return;
+            this.handleTypeAnswerSubmission(input, questionDiv);
+        });
+
+        container.appendChild(input);
+        container.appendChild(submitButton);
+        return container;
+    }
+
+    static handleTypeAnswerSubmission(input, questionDiv) {
+        if (questionDiv.dataset.answered === 'true') {
+            return;
         }
 
+        const userAnswer = input.value.trim().toLowerCase();
+        const correctAnswer = questionDiv.dataset.correctAnswer.toLowerCase();
 
-        return questionDiv;
+        const resultDisplay = document.createElement('div');
+        resultDisplay.className = 'type-answer-result';
+
+        if (userAnswer === correctAnswer) {
+            resultDisplay.textContent = '✓ Correct!';
+            resultDisplay.classList.add('correct');
+            this.correctAnswers++;
+        } else {
+            resultDisplay.textContent = `✗ Incorrect. The correct answer was: ${questionDiv.dataset.correctAnswer}`;
+            resultDisplay.classList.add('incorrect');
+        }
+
+        const container = input.parentElement;
+        container.appendChild(resultDisplay);
+
+
+        input.disabled = true;
+        const submitButton = container.querySelector('.type-answer-submit');
+        if (submitButton) {
+            submitButton.disabled = true;
+        }
+
+        questionDiv.dataset.answered = 'true';
+        this.isCurrentQuestionAnswered = true;
+        this.answeredQuestions++;
     }
+
+
+
 
     static createChoiceElement(choiceKey, choiceText, index, questionDiv) {
         const label = document.createElement('label');
@@ -173,6 +284,10 @@ export class QuizManager {
             return;
         }
 
+        if (questionDiv.dataset.type === 'type_answer') {
+            return;
+        }
+
         allOptions.forEach(opt => opt.classList.remove('correct', 'incorrect'));
 
         const correctAnswer = questionDiv.dataset.correctAnswer;
@@ -196,6 +311,7 @@ export class QuizManager {
         this.answeredQuestions++;
         allOptions.forEach(opt => opt.style.pointerEvents = 'none');
     }
+
 
 
     static showResults() {

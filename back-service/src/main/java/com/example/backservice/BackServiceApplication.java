@@ -19,7 +19,6 @@ public class BackServiceApplication {
          * 4. If any error occurs like while generating cause, AI has a rate limit pop up some error page ( NOT DONE )
          * 5. For Some reason when the app is run and tested on 1 site and then moves to the next on next, It does not extract from that
          * but from the previous website ( NOT DONE )
-         * 6. Introduce Manually type Questions ( NOT DONE )
          */
     }
 

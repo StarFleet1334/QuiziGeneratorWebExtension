@@ -28,6 +28,7 @@ async def generate_questions(req: TextRequest):
         prompt = TextService.get_question_prompt(
             random_chunk,
             req.trueFalseQuestions,
+            req.typeAnswerQuestions
         )
 
         logger.debug(f"Generated prompt: {prompt}")
