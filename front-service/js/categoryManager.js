@@ -53,17 +53,21 @@ export class CategoryManager {
     static async handleCategorySelect(category, relatedContent) {
         const elements = UIManager.getElements();
         try {
-            const content = await APIService.getTabContent();
-            if (content) {
-                const questions = await APIService.fetchFromServer('content', relatedContent[0]);
-                UIManager.switchView(elements.categoryView, elements.secondView);
-                QuizManager.createQuizUI(questions);
-
+            const freshContent = await APIService.getTabContent();
+            if (!freshContent) {
+                throw new Error('Failed to get fresh content from current page');
             }
+            console.log('Using fresh content from current page:', window.location.href);
+
+            const questions = await APIService.fetchFromServer('content', freshContent);
+            UIManager.switchView(elements.categoryView, elements.secondView);
+            QuizManager.createQuizUI(questions);
         } catch (error) {
             console.error("[Active Reading Quiz] Error:", error);
+            UIManager.showError(elements.quizContainer, "Failed to generate questions. Please try again.");
         }
     }
+
 
     static showNoCategories(container) {
         const message = document.createElement('p');

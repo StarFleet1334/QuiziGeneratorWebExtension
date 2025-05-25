@@ -27,9 +27,6 @@ public class DataService {
     private final RestTemplate restTemplate;
     private final ApiProperties apiProperties;
 
-    private List<QuestionResponse> questions;
-    private String content;
-
     @Value("${api.retry.maxAttempts:3}")
     private int maxRetryAttempts;
 
@@ -151,9 +148,7 @@ public class DataService {
             throw new ApiResponseException("Invalid response format from questions API");
         }
 
-        this.questions = response.getBody().get("questions");
-        LOGGER.info("Generated {} questions", questions.size());
-        return questions;
+        return response.getBody().get("questions");
     }
 
     public Map<String, List<String>> divideContentIntoCategories(String content) {
@@ -177,8 +172,7 @@ public class DataService {
     }
 
     public String preProcessContent(String content) {
-        this.content = cleanText(content);
-        return content;
+        return cleanText(content);
     }
 
     private String cleanText(String text) {

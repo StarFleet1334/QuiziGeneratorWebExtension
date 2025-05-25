@@ -7,6 +7,7 @@ import com.example.backservice.skeleton.DataControllerInterface;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -21,21 +22,22 @@ public class DataController implements DataControllerInterface {
 
     @Override
     public ResponseEntity<?> saveContent(ContentRequest content) {
-        String cleanedContent;
-        List<QuestionResponse> generatedQuestions;
-        if (dataService.getContent() == null) {
-            cleanedContent = dataService.preProcessContent(content.getContent());
-            generatedQuestions = dataService.generateQuestions(cleanedContent,content.isTrueFalseQuestions(),content.isTypeAnswerQuestions());
-        } else {
-            generatedQuestions = dataService.generateQuestions(dataService.getContent(),content.isTrueFalseQuestions(),content.isTypeAnswerQuestions());
+        try {
+            String cleanedContent = dataService.preProcessContent(content.getText());
+            List<QuestionResponse> generatedQuestions = dataService.generateQuestions(
+                    cleanedContent,
+                    content.isTrueFalseQuestions(),
+                    content.isTypeAnswerQuestions()
+            );
+
+            LOGGER.info("Generated {} questions for content length: {}",
+                    generatedQuestions.size(), cleanedContent.length());
+            return ResponseEntity.ok(generatedQuestions);
+        } catch (Exception e) {
+            LOGGER.error("Error processing content request: ", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(List.of("Failed to generate questions: " + e.getMessage()));
         }
-        return ResponseEntity.ok(generatedQuestions);
     }
-
-    @Override
-    public ResponseEntity<String> getContent() {
-        return dataService.getContent() != null ? ResponseEntity.ok(dataService.getContent()) : ResponseEntity.notFound().build();
-    }
-
 
 }

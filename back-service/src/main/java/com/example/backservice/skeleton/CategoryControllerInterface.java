@@ -29,16 +29,4 @@ public interface CategoryControllerInterface {
     );
 
 
-    @PostMapping(value = "/{category}")
-    @Operation(summary = "Get content by category", description = "Operation retrieves content by category")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Content successfully retrieved"),
-            @ApiResponse(responseCode = "404", description = "Content not found"),
-            @ApiResponse(responseCode = "500", description = "Internal server error")
-    })
-    ResponseEntity<?> getContentByCategory(
-            @Parameter(description = "Category name", required = true)
-            @PathVariable String category
-    );
-
 }

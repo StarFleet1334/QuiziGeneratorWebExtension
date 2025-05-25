@@ -48,17 +48,34 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
-
             const content = await APIService.getTabContent();
-            if (content) {
+            if (!content) {
+                UIManager.showCustomAlert("Could not extract content from the page. Please try again.");
+                return;
+            }
+
+            try {
                 const questions = await APIService.fetchFromServer('content', content);
+                if (!questions || questions.length === 0) {
+                    UIManager.showCustomAlert("No questions could be generated. Please try a different page.");
+                    return;
+                }
                 UIManager.switchView(elements.initialView, elements.secondView);
                 QuizManager.createQuizUI(questions);
+            } catch (error) {
+                if (error.message.includes('Server connection failed')) {
+                    UIManager.showCustomAlert("Could not connect to the server. Please make sure it's running.");
+                } else {
+                    UIManager.showCustomAlert("An error occurred while generating questions. Please try again.");
+                }
+                console.error("[Active Reading Quiz] Error:", error);
             }
         } catch (error) {
             console.error("[Active Reading Quiz] Error:", error);
+            UIManager.showCustomAlert("Failed to extract content. Please try again on a different page.");
         }
     }
+
 
     async function generateCategories() {
         try {

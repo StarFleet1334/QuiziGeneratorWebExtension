@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ContentRequest {
-    private String content;
+    private String text;
     private boolean trueFalseQuestions;
     private boolean typeAnswerQuestions;
 }
