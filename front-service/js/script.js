@@ -35,7 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     secondsInput.addEventListener('input', (e) => {
-        const value = Math.min(Math.max(parseInt(e.target.value) || 60, 60), 600);
+        const value = Math.min(Math.max(parseInt(e.target.value) || 1, 1), 60);
         secondsInput.value = value;
         SettingsManager.updateTimeLimit(minutesInput.value, value);
     });
@@ -47,6 +47,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 UIManager.showCustomAlert("Please answer the current question before generating a new one!");
                 return;
             }
+            QuizManager.questionCounter++;
 
             const content = await APIService.getTabContent();
             if (!content) {

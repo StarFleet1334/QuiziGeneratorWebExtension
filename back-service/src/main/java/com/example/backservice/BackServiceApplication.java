@@ -15,6 +15,9 @@ public class BackServiceApplication {
          * <p>
          * 1. Make a readme to explain endpoints ( NOT DONE )
          * 2. Gradually increase difficulty if a user does good and decrease if user does bad ( NOT DONE )
+         * 3. Introduce Game Made ( NOT DONE )
+         * 4. Loading Spinner on exceeded usage of AI ( NOT DONE )
+         *
          */
     }
 

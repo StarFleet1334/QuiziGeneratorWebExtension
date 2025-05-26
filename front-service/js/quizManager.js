@@ -105,8 +105,8 @@ export class QuizManager {
             return;
         }
 
+
         quizContainer.innerHTML = '';
-        this.questionCounter++;
         this.isCurrentQuestionAnswered = false;
 
         const currentQuestionElement = document.getElementById('currentQuestion');
@@ -150,7 +150,6 @@ export class QuizManager {
                     if (entry.isIntersecting) {
                         const currentQuestion = document.getElementById('currentQuestion');
                         if (currentQuestion) {
-                            currentQuestion.textContent = questionDiv.dataset.questionNumber;
                         }
                     }
                 });
