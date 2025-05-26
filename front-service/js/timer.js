@@ -1,10 +1,15 @@
 
 export class Timer {
     constructor(minutes, seconds = 0, remainingSeconds = null) {
-        this.totalSeconds = (minutes * 60) + seconds;
+        const additionalMinutes = Math.floor(seconds / 60);
+        const remainingSecondsAfterConversion = seconds % 60;
+        const totalMinutes = minutes + additionalMinutes;
+
+        this.totalSeconds = (totalMinutes * 60) + remainingSecondsAfterConversion;
         this.remainingSeconds = remainingSeconds !== null ? remainingSeconds : this.totalSeconds;
         this.timerId = null;
         this.onTimeUp = null;
+
     }
 
     start(onTick, onTimeUp) {

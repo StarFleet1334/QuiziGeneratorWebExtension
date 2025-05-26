@@ -9,7 +9,8 @@ export class SettingsManager {
         timeLimit: {
             minutes: 5,
             seconds: 60
-        }
+        },
+        difficulty: 'easy'
     };
 
     static saveSettings(settings) {
@@ -35,6 +36,28 @@ export class SettingsManager {
         };
         this.saveSettings(currentSettings);
     }
+
+    static getDifficultySettings() {
+        const difficulty = this.getSettings().difficulty;
+        switch(difficulty) {
+            case 'easy':
+                return {
+                    timeMultiplier: 1.5,
+                    questionComplexity: 'basic'
+                };
+            case 'hard':
+                return {
+                    timeMultiplier: 0.7,
+                    questionComplexity: 'complex'
+                };
+            default:
+                return {
+                    timeMultiplier: 1,
+                    questionComplexity: 'standard'
+                };
+        }
+    }
+
 
     static getDefaultSettings() {
         return {

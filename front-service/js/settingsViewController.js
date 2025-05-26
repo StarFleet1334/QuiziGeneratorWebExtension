@@ -4,7 +4,32 @@ export class SettingsViewController {
     static initialize() {
         this.#initializeToggles();
         this.#initializeBackButton();
+        this.#initializeDifficultyButtons();
     }
+
+    static #initializeDifficultyButtons() {
+        const difficultyButtons = document.querySelectorAll('.difficulty-btn');
+        const currentSettings = SettingsManager.getSettings();
+
+        difficultyButtons.forEach(btn => {
+            btn.classList.remove('active');
+        });
+
+        const activeButton = document.querySelector(`.difficulty-btn[data-difficulty="${currentSettings.difficulty}"]`);
+        if (activeButton) {
+            activeButton.classList.add('active');
+        }
+
+        difficultyButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                difficultyButtons.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                SettingsManager.updateSettings('difficulty', btn.dataset.difficulty);
+            });
+        });
+    }
+
+
 
     static #initializeToggles() {
         const defaultQuestionsToggle = document.getElementById('defaultQuestionsToggle');

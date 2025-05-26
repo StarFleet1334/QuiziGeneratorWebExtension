@@ -97,14 +97,11 @@ export class QuizManager {
             this.timerDisplay = null;
         }
 
-        this.initializeTimer();
-
         const {quizContainer} = UIManager.getElements();
         if (!quizContainer) {
             console.error('Quiz container not found');
             return;
         }
-
 
         quizContainer.innerHTML = '';
         this.isCurrentQuestionAnswered = false;
@@ -113,6 +110,30 @@ export class QuizManager {
         if (currentQuestionElement) {
             currentQuestionElement.textContent = this.questionCounter;
         }
+
+        const difficultySettings = SettingsManager.getDifficultySettings();
+        const timeLimit = SettingsManager.getSettings().timeLimit;
+
+        const totalSeconds = (timeLimit.minutes * 60 + timeLimit.seconds) * difficultySettings.timeMultiplier;
+        const adjustedMinutes = Math.floor(totalSeconds / 60);
+        const adjustedSeconds = Math.floor(totalSeconds % 60);
+
+        this.timerDisplay = document.createElement('div');
+        this.timerDisplay.className = 'quiz-timer';
+        document.body.appendChild(this.timerDisplay);
+
+        this.timer = new Timer(adjustedMinutes, adjustedSeconds);
+        this.updateTimerDisplay(this.timer.getTimeRemaining());
+
+
+        this.timer.start(
+            (timeRemaining) => {
+                this.updateTimerDisplay(timeRemaining);
+            },
+            () => {
+                this.handleTimeUp();
+            }
+        );
 
         questions.forEach((question, index) => {
             try {

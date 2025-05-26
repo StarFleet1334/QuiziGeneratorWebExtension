@@ -58,9 +58,8 @@ The project consists of three main services:
 ## Future Enhancements
 
 1. Dynamic difficulty adjustment based on user performance
-2. Enhanced game modes and interactive features
-3. Loading indicators for AI operations
-4. Multiple language support
+2. Loading indicators for AI operations
+3. Multiple language support
 
 
 
