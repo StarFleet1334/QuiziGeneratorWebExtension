@@ -37,7 +37,12 @@
       "js/quizManager.js",
       "js/categoryManager.js",
       "js/apiService.js",
-      "libs/*"
+      "libs/*",
+      "assets/flags/en.svg",
+      "assets/flags/es.svg",
+      "assets/flags/de.svg",
+      "assets/flags/fr.svg",
+      "js/translations/*.js"
     ],
     "matches": ["<all_urls>"]
   }]

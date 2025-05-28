@@ -5,6 +5,8 @@ import { APIService } from './apiService.js';
 import { ThemeManager } from './themeManager.js';
 import {SettingsManager} from "./settings.js";
 import { SettingsViewController } from './settingsViewController.js';
+import {LanguageSelector} from "./languageSelector.js";
+import {TranslationManager} from "./translations.js";
 
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -27,6 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     const themeManager = new ThemeManager();
+
 
     minutesInput.addEventListener('input', (e) => {
         const value = Math.min(Math.max(parseInt(e.target.value) || 1, 1), 10);
@@ -109,9 +112,6 @@ document.addEventListener('DOMContentLoaded', () => {
         QuizManager.resetQuestionCounter();
         UIManager.switchView(elements.resultsView, elements.initialView);
     });
-    document.getElementById("settingsButton").addEventListener("click", () => {
-        UIManager.switchView(elements.initialView, elements.settingsView);
-    })
     document.getElementById("settingsBackButton").addEventListener("click",() => {
         UIManager.switchView(elements.settingsView, elements.initialView);
     })
@@ -121,6 +121,23 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('settingsView').style.display = 'block';
         SettingsViewController.initialize();
     });
+
+    const languageSelector = new LanguageSelector();
+    const settingsContainer = document.querySelector('.settings-container');
+
+    const langSettingItem = document.createElement('div');
+    langSettingItem.className = 'setting-item';
+    const langLabel = document.createElement('label');
+    langLabel.className = 'switch-label';
+    langLabel.textContent = 'Language';
+
+    langSettingItem.appendChild(langLabel);
+    langSettingItem.appendChild(languageSelector.createLanguageSelector());
+    settingsContainer.insertBefore(langSettingItem, settingsContainer.firstChild);
+
+    TranslationManager.setLanguage(SettingsManager.getSettings().language || 'en');
+
+
 
 
 

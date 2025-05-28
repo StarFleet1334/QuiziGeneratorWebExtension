@@ -6,6 +6,7 @@ export class SettingsManager {
         defaultQuestions: true,
         trueFalseQuestions: false,
         typeAnswerQuestions: false,
+        language: 'en',
         timeLimit: {
             minutes: 5,
             seconds: 60
