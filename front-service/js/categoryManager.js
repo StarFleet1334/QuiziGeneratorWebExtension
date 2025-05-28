@@ -61,6 +61,7 @@ export class CategoryManager {
 
             const questions = await APIService.fetchFromServer('content', freshContent);
             UIManager.switchView(elements.categoryView, elements.secondView);
+            QuizManager.questionCounter++;
             QuizManager.createQuizUI(questions);
         } catch (error) {
             console.error("[Active Reading Quiz] Error:", error);

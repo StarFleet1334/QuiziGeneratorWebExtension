@@ -40,7 +40,6 @@ export class TranslationManager {
         try {
             document.title = this.getText('title');
 
-            // Update headings
             document.querySelectorAll('h2').forEach(h2 => {
                 if (h2.closest('#initialView')) h2.textContent = this.getText('title');
                 if (h2.closest('#settingsView')) h2.textContent = this.getText('settings.title');
@@ -95,25 +94,19 @@ export class TranslationManager {
                     questionCounter.firstChild.textContent = this.getText('quiz.question') + ' ';
                 }
             }
-
-            this.updateScore();
-
         } catch (error) {
             console.error('Error updating translations:', error);
         }
     }
 
-    static updateScore() {
-        const correctAnswers = document.getElementById('correctAnswers');
-        const totalQuestions = document.getElementById('totalQuestions');
-        if (correctAnswers && totalQuestions) {
-            const scoreText = document.querySelector('.score-text');
-            if (scoreText) {
-                scoreText.textContent = this.getText('quiz.score', {
-                    correct: correctAnswers.textContent,
-                    total: totalQuestions.textContent
-                });
-            }
+    static updateScore(correctAnswers,totalQuestions) {
+        const scoreText = document.querySelector('.score-text');
+        if (scoreText) {
+            scoreText.textContent = this.getText('quiz.score', {
+                correct: correctAnswers,
+                total: totalQuestions
+            });
+            console.log("Score updated: ", correctAnswers, totalQuestions, " - ", scoreText.textContent);
         }
     }
 }

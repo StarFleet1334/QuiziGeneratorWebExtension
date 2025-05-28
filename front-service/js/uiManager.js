@@ -60,16 +60,13 @@ export class UIManager {
         alertDiv.appendChild(messageDiv);
         alertDiv.appendChild(closeButton);
 
-        // Append to alertContainer instead of body
         alertContainer.appendChild(alertDiv);
 
-        // Calculate position relative to viewport
         const topPosition = Math.min(
             buttonsRect.bottom + window.scrollY + 20,
             window.innerHeight - alertDiv.offsetHeight - 20
         );
 
-        // Update CSS for positioning
         alertDiv.style.cssText = `
         position: absolute;
         top: ${topPosition}px;

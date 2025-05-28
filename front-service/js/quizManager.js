@@ -1,6 +1,8 @@
 import {UIManager} from './uiManager.js';
 import {Timer} from './timer.js';
 import {SettingsManager} from "./settings.js";
+import {TranslationManager} from "./translations.js";
+
 
 export class QuizManager {
     static questionCounter = 0;
@@ -58,7 +60,7 @@ export class QuizManager {
 
         const minutes = String(timeRemaining.minutes).padStart(2, '0');
         const seconds = String(timeRemaining.seconds).padStart(2, '0');
-        this.timerDisplay.textContent = `Time: ${minutes}:${seconds}`;
+        this.timerDisplay.textContent = `${minutes}:${seconds}`;
         this.timerDisplay.style.opacity = '1';
 
         if (timeRemaining.total < 60) {
@@ -347,10 +349,7 @@ export class QuizManager {
         const correctAnswersElement = document.getElementById('correctAnswers');
         const totalQuestionsElement = document.getElementById('totalQuestions');
 
-        if (correctAnswersElement && totalQuestionsElement) {
-            correctAnswersElement.textContent = this.correctAnswers;
-            totalQuestionsElement.textContent = this.answeredQuestions;
-        }
+        TranslationManager.updateScore(this.correctAnswers,this.answeredQuestions)
 
         console.log(`Quiz Results - Correct: ${this.correctAnswers}, Total: ${this.answeredQuestions}`);
 
