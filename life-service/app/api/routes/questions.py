@@ -11,6 +11,7 @@ logger = logging.getLogger(__name__)
 @router.post("/generate-questions")
 async def generate_questions(req: TextRequest):
     logger.info("generate_questions endpoint called")
+    logger.info("Passed language was: " + req.language)
 
     if not req.text.strip():
         return {"questions": [], "error": "Input text is empty"}
@@ -28,8 +29,10 @@ async def generate_questions(req: TextRequest):
         prompt = TextService.get_question_prompt(
             random_chunk,
             req.trueFalseQuestions,
-            req.typeAnswerQuestions
+            req.typeAnswerQuestions,
+            req.language
         )
+
 
         logger.debug(f"Generated prompt: {prompt}")
         logger.info("Sending prompt to AI service")

@@ -58,8 +58,7 @@ The project consists of three main services:
 ## Future Enhancements
 
 1. Dynamic difficulty adjustment based on user performance
-2. Multiple language support
-
+2. Highlighting of a text and provide a description of it
 
 
 

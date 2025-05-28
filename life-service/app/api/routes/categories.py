@@ -23,7 +23,7 @@ async def generate_categories(req: TextRequest):
         category_matches = {}
 
         for chunk in chunks:
-            formatted_prompt = TextService.get_category_prompt(chunk)
+            formatted_prompt = TextService.get_category_prompt(chunk,req.language)
             result = await ai_service.generate_content(formatted_prompt)
             categories = TextService.parse_categories(result)
 
@@ -37,27 +37,3 @@ async def generate_categories(req: TextRequest):
     except Exception as e:
         logger.warning(f"Error generating categories: {str(e)}")
         return {}
-
-@router.post("/generate-categories/{category}")
-async def generate_questions_by_category(category: str, req: TextRequest):
-    logger.info(f"generate_questions_by_category endpoint called for category: {category}")
-
-    if not req.text.strip():
-        return {"questions": [], "error": "Input text is empty"}
-
-    try:
-        chunks = TextService.split_into_chunks(req.text)
-        questions = []
-
-        for chunk in chunks:
-            if await TextService.is_chunk_relevant(chunk, category, ai_service):
-                question_prompt = TextService.get_question_prompt(chunk, category)
-                result = await ai_service.generate_content(question_prompt)
-                parsed = TextService.parse_question(result)
-                if parsed:
-                    questions.append(parsed)
-
-        return {"questions": questions}
-
-    except Exception as e:
-        return {"questions": [], "error": str(e)}

@@ -11,4 +11,5 @@ public class ContentRequest {
     private String text;
     private boolean trueFalseQuestions;
     private boolean typeAnswerQuestions;
+    private String language;
 }

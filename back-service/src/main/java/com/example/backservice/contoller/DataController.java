@@ -27,7 +27,8 @@ public class DataController implements DataControllerInterface {
             List<QuestionResponse> generatedQuestions = dataService.generateQuestions(
                     cleanedContent,
                     content.isTrueFalseQuestions(),
-                    content.isTypeAnswerQuestions()
+                    content.isTypeAnswerQuestions(),
+                    content.getLanguage()
             );
 
             LOGGER.info("Generated {} questions for content length: {}",

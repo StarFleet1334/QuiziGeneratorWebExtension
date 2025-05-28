@@ -24,9 +24,9 @@ class TextService:
         return chunks
 
     @staticmethod
-    def get_category_prompt(chunk: str) -> str:
+    def get_category_prompt(chunk: str,language: str) -> str:
         return f"""
-            Please analyze the passage below and extract its key subject areas.  
+            Please analyze the passage below and extract its key subject areas in language {language}.  
             Return **no more than five** broad thematic categories that could each serve as the basis for multiple quiz questions.
             
             Text to analyze:
@@ -41,7 +41,7 @@ class TextService:
             """
 
     @staticmethod
-    def get_question_prompt(chunk: str, true_false_questions: bool = False,type_answer_questions: bool = False,category: str = None) -> str:
+    def get_question_prompt(chunk: str, true_false_questions: bool = False,type_answer_questions: bool = False,language: str = "English",category: str = None) -> str:
         rand = random.random()
 
         is_true_false = true_false_questions and rand <= 0.33
@@ -65,6 +65,7 @@ class TextService:
         if category:
             base_prompt += f" specifically about the topic: {category}"
 
+        base_prompt += f"""in language {language}."""
         if is_true_false:
             full_prompt = f"""{base_prompt}
             The question must be directly answerable from the text.

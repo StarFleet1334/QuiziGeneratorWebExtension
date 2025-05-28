@@ -35,25 +35,27 @@ public class DataService {
         this.apiProperties = apiProperties;
     }
 
-    private <T> ResponseEntity<T> makeApiRequest(String url, String content,
+    private <T> ResponseEntity<T> makeApiRequest(String url, String content,String language,
                                                  ParameterizedTypeReference<T> typeReference) {
-        return makeApiRequest(url, content,typeReference,null);
+        return makeApiRequest(url, content,language,typeReference,null);
     }
 
     private <T> ResponseEntity<T> makeApiRequest(String url, String content,
                                                  boolean isTrueFalseQuestions,
                                                  boolean isTypeAnswerQuestions,
+                                                 String language,
                                                  ParameterizedTypeReference<T> typeReference) {
-        return makeApiRequest(url, content,isTrueFalseQuestions,isTypeAnswerQuestions, typeReference, null);
+        return makeApiRequest(url, content,isTrueFalseQuestions,isTypeAnswerQuestions,language, typeReference, null);
     }
 
     private <T> ResponseEntity<T> makeApiRequest(String url, String content,
                                                  boolean isTrueFalseQuestions,
                                                  boolean isTypeAnswerQuestions,
+                                                 String language,
                                                  ParameterizedTypeReference<T> typeReference, Class<T> responseType) {
         validateContent(content);
 
-        HttpEntity<Map<String, Object>> requestEntity = createRequestEntity(content, isTrueFalseQuestions, isTypeAnswerQuestions);
+        HttpEntity<Map<String, Object>> requestEntity = createRequestEntity(content, isTrueFalseQuestions, isTypeAnswerQuestions,language);
 
         return executeWithRetry(() -> {
             return restTemplate.exchange(url, HttpMethod.POST, requestEntity, typeReference);
@@ -61,11 +63,11 @@ public class DataService {
 
     }
 
-    private <T> ResponseEntity<T> makeApiRequest(String url, String content,
+    private <T> ResponseEntity<T> makeApiRequest(String url, String content,String language,
                                                  ParameterizedTypeReference<T> typeReference, Class<T> responseType) {
         validateContent(content);
 
-        HttpEntity<Map<String, String>> requestEntity = createRequestEntity(content);
+        HttpEntity<Map<String, String>> requestEntity = createRequestEntity(content,language);
 
         return executeWithRetry(() -> {
             if (typeReference != null) {
@@ -83,15 +85,17 @@ public class DataService {
         }
     }
 
-    private HttpEntity<Map<String, String>> createRequestEntity(String content) {
+    private HttpEntity<Map<String, String>> createRequestEntity(String content,String language) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 
-        Map<String, String> requestBody = Map.of("text", content);
+        Map<String, String> requestBody = new HashMap<>();
+        requestBody.put("text", content);
+        requestBody.put("language", language);
         return new HttpEntity<>(requestBody, headers);
     }
 
-    private HttpEntity<Map<String, Object>> createRequestEntity(String content, boolean trueFalseQuestions, boolean typeAnswerQuestions) {
+    private HttpEntity<Map<String, Object>> createRequestEntity(String content, boolean trueFalseQuestions, boolean typeAnswerQuestions,String language) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 
@@ -99,6 +103,7 @@ public class DataService {
         requestBody.put("text", content);
         requestBody.put("trueFalseQuestions", trueFalseQuestions);
         requestBody.put("typeAnswerQuestions", typeAnswerQuestions);
+        requestBody.put("language", language);
 
         return new HttpEntity<>(requestBody, headers);
     }
@@ -132,7 +137,7 @@ public class DataService {
         }
     }
 
-    public List<QuestionResponse> generateQuestions(String content,boolean isTrueFalseQuestions,boolean isTypeAnswerQuestions) {
+    public List<QuestionResponse> generateQuestions(String content,boolean isTrueFalseQuestions,boolean isTypeAnswerQuestions,String language) {
         LOGGER.info("Generating questions for content length: {}", content.length());
 
         ResponseEntity<Map<String, List<QuestionResponse>>> response = makeApiRequest(
@@ -140,6 +145,7 @@ public class DataService {
                 content,
                 isTrueFalseQuestions,
                 isTypeAnswerQuestions,
+                language,
                 new ParameterizedTypeReference<>() {}
         );
 
@@ -151,12 +157,13 @@ public class DataService {
         return response.getBody().get("questions");
     }
 
-    public Map<String, List<String>> divideContentIntoCategories(String content) {
+    public Map<String, List<String>> divideContentIntoCategories(String content,String language) {
         LOGGER.info("Dividing content into categories, content length: {}", content.length());
 
         ResponseEntity<Map<String, List<String>>> response = makeApiRequest(
                 apiProperties.getCategoriesUrl(),
                 content,
+                language,
                 new ParameterizedTypeReference<Map<String, List<String>>>() {}
         );
 

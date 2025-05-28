@@ -72,10 +72,30 @@ export class APIService {
             console.log('Request URL:', url);
             console.log('Content length:', content?.length);
 
+            const LANGUAGE_MAP = {
+                en: "English",
+                es: "Spanish",
+                de: "German",
+                fr: "French",
+                zh: "Chinese",
+                hi: "Hindi",
+                ar: "Arabic",
+                pt: "Portuguese",
+                ru: "Russian",
+                ja: "Japanese",
+                ko: "Korean",
+                it: "Italian",
+                nl: "Dutch",
+                tr: "Turkish"
+            };
+
+            const language = LANGUAGE_MAP[settings.language] || "English";
+            console.log('Language sent:', language);
             const requestBody = {
                 text: content,
                 trueFalseQuestions: settings.trueFalseQuestions,
-                typeAnswerQuestions: settings.typeAnswerQuestions
+                typeAnswerQuestions: settings.typeAnswerQuestions,
+                language: language,
             };
 
 

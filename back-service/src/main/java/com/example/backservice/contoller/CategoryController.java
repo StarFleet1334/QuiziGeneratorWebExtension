@@ -22,7 +22,7 @@ public class CategoryController implements CategoryControllerInterface {
     public ResponseEntity<Map<String, List<String>>> divideContentIntoCategory(ContentRequest content) {
         try {
             String cleanedContent = dataService.preProcessContent(content.getText());
-            Map<String, List<String>> categories = dataService.divideContentIntoCategories(cleanedContent);
+            Map<String, List<String>> categories = dataService.divideContentIntoCategories(cleanedContent,content.getLanguage());
             LOGGER.info("Generated categories for content length: {}", cleanedContent.length());
             return ResponseEntity.ok(categories);
         } catch (Exception e) {
